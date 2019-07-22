@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: /humanos-acquisition
   docker:
-    - image: circleci/dubnium-browsers
+    - image: circleci/node:dubnium-browsers
 
 version: 2
 jobs:
