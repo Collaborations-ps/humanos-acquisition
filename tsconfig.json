@@ -5,7 +5,7 @@
     "declaration": false,
     "sourceMap": true,
     "incremental": true,
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "removeComments": true,
     "esModuleInterop": true,

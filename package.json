@@ -6,21 +6,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "lint": "cross-env CI=true eslint './src/**/*.{ts,tsx}'",
+    "lint": "cross-env CI=true eslint './src/**/*.{ts,tsx,json}'",
     "lint:fix": "yarn lint --fix",
+    "typecheck": "tsc -p .",
     "optimize:svg": "yarn optimize svg"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "dependencies": {
     "@types/jest": "24.0.15",
@@ -46,6 +35,32 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-prettier": "3.1.0",
     "eslint-plugin-react": "7.14.2",
+    "husky": "3.0.1",
+    "lint-staged": "9.2.0",
     "prettier": "1.18.2"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,json}": [
+      "eslint --fix",
+      "prettier --config .prettierrc --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn typecheck && lint-staged"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
