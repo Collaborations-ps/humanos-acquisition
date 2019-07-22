@@ -5,14 +5,19 @@ const isProduction =
 
 module.exports = {
   parser: '@typescript-eslint/parser',
-  extends: ['airbnb', 'prettier', 'prettier/react'],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'airbnb',
+    'prettier',
+    'prettier/react',
+  ],
   env: {
     browser: true,
     jest: true,
     es6: true,
     node: true,
   },
-  plugins: ['prettier', 'json'],
+  plugins: ['@typescript-eslint', 'prettier', 'json'],
   rules: {
     'prettier/prettier': [1, prettierOptions],
     'no-console': isProduction ? 2 : 1,
@@ -25,8 +30,11 @@ module.exports = {
     'react/jsx-sort-props': [2, { callbacksLast: true }],
     'react/sort-prop-types': [2, { callbacksLast: true }],
     'react/prop-types': 2,
+    '@typescript-eslint/indent': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
   },
   parserOptions: {
+    project: './tsconfig.json',
     ecmaFeatures: {
       jsx: true,
       classes: true,
