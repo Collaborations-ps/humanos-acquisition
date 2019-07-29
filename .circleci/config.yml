@@ -39,7 +39,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run: yarn test
+      - run: yarn lint:fix # TODO: temporary linter
 
 workflows:
   version: 2
