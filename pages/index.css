@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #444;
+  padding: 16px;
+}
+
+html,
+body,
+* {
+  box-sizing: border-box;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.user {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.content {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  margin: 16px 0;
+  padding: 16px;
+}
+
+.messages {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+pre {
+  background: #f3f3f3;
+  padding: 4px;
+  border: 1px solid #a3a3a3;
+}

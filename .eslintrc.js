@@ -26,12 +26,14 @@ module.exports = {
     'react/jsx-no-bind': 2,
     'react/jsx-boolean-value': 2,
     'react/jsx-handler-names': 2,
-    'react/jsx-filename-extension': [2, { extensions: ['.ts', '.tsx'] }],
+    'react/jsx-filename-extension': [2, { extensions: ['.js', '.ts', '.tsx'] }],
     'react/jsx-sort-props': [2, { callbacksLast: true }],
     'react/sort-prop-types': [2, { callbacksLast: true }],
     'react/prop-types': 2,
     '@typescript-eslint/indent': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/no-var-requires': 0,
+    '@typescript-eslint/member-delimiter-style': 0,
   },
   parserOptions: {
     project: './tsconfig.json',
@@ -43,8 +45,8 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        moduleDirectory: ['node_modules', 'src'],
-        extensions: ['.ts', '.tsx'],
+        moduleDirectory: ['node_modules', 'server', 'pages'],
+        extensions: ['.js', '.ts', '.tsx'],
       },
     },
   },
