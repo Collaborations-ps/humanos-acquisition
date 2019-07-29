@@ -7,6 +7,7 @@ import {
 import axios from 'axios'
 
 import get from 'lodash/get'
+import find from 'lodash/find'
 import sampleSize from 'lodash/sampleSize'
 
 import Timer from './timer'
@@ -31,6 +32,7 @@ interface State {
   mailbox: Mailbox | null
   loadingMessages: boolean
   messagesExample: any
+  mailboxPath: string | undefined
 }
 
 function parseLoginResponse(response: GoogleLoginResponse): Auth {
@@ -55,6 +57,7 @@ class App extends PureComponent<{}, State> {
     mailbox: null,
     loadingMessages: false,
     messagesExample: [],
+    mailboxPath: undefined,
   }
 
   public messages = []
@@ -68,8 +71,8 @@ class App extends PureComponent<{}, State> {
           {
             auth: JSON.parse(googleData),
           },
-          () => {
-            this.getMailbox('INBOX')
+          async () => {
+            this.getAllMailbox()
           },
         )
       }
@@ -80,9 +83,39 @@ class App extends PureComponent<{}, State> {
     const { auth } = this.state
 
     if (auth !== null) {
-      axios.get('/mailboxes', {
+      return axios.get('/mailboxes', {
         params: auth,
       })
+    }
+    return null
+  }
+
+  private async getAllMailbox() {
+    const mailboxes = await this.getMailboxes()
+
+    if (mailboxes) {
+      const gmail = find(
+        get(mailboxes, 'data.children', []),
+        mailbox => mailbox.name === '[Gmail]',
+      )
+
+      console.log(gmail)
+
+      const allMailbox = find(
+        get(gmail, 'children', []),
+        mailbox => mailbox.specialUse === '\\All',
+      )
+
+      if (allMailbox) {
+        this.setState(
+          {
+            mailboxPath: allMailbox.path,
+          },
+          () => {
+            this.getMailbox(allMailbox.path)
+          },
+        )
+      }
     }
   }
 
@@ -113,7 +146,7 @@ class App extends PureComponent<{}, State> {
       auth,
     })
 
-    this.getMailbox('INBOX')
+    this.getAllMailbox()
   }
 
   private handleFailureLogin = (): void => {
@@ -132,13 +165,13 @@ class App extends PureComponent<{}, State> {
   }
 
   private handleFetchMessages = async () => {
-    const { auth } = this.state
+    const { auth, mailboxPath } = this.state
 
     if (typeof auth === 'object') {
       this.setState({ loadingMessages: true })
 
       const messagesResponse = await axios.get('/messages', {
-        params: { ...(auth || {}), mailbox: 'INBOX', limit: '1:1000' },
+        params: { ...(auth || {}), mailbox: mailboxPath, limit: '1:*' },
       })
 
       this.messages = await parseMessages(messagesResponse.data)
