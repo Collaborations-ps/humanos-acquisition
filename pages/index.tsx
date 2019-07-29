@@ -122,7 +122,13 @@ class App extends PureComponent<{}, State> {
 
   private handleLogout = () => {
     sessionStorage.removeItem('google')
-    this.setState({ auth: null, mailbox: null,loadingMessages: false,error: false,messagesExample: [] })
+    this.setState({
+      auth: null,
+      mailbox: null,
+      loadingMessages: false,
+      error: false,
+      messagesExample: [],
+    })
   }
 
   private handleFetchMessages = async () => {
