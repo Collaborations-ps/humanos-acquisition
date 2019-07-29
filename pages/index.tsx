@@ -99,8 +99,6 @@ class App extends PureComponent<{}, State> {
         mailbox => mailbox.name === '[Gmail]',
       )
 
-      console.log(gmail)
-
       const allMailbox = find(
         get(gmail, 'children', []),
         mailbox => mailbox.specialUse === '\\All',
