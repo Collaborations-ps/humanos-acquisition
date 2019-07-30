@@ -135,7 +135,7 @@ class App extends PureComponent<{}, State> {
 
     const file = new File([blob], 'data.json', { type: 'application/json' })
 
-    const s3Url = await api.signGMailData({
+    const s3Url = await api.signGmailPackage({
       name: file.name,
       contentType: 'application/json',
       size: file.size,
@@ -147,6 +147,8 @@ class App extends PureComponent<{}, State> {
           'Content-Type': 'application/json',
         },
       })
+
+      await api.sendNotification()
     }
 
     this.setState({ fileUploading: false })

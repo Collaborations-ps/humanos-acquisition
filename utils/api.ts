@@ -32,7 +32,20 @@ async function checkAuthorized(): Promise<boolean> {
   return data.ok
 }
 
-async function signGMailData({
+async function sendNotification(): Promise<boolean> {
+  const response = await axios.get(
+    `${publicRuntimeConfig.API_HOST}/private/gmailPackageUploaded`,
+    {
+      headers: getAuthHeaders(),
+    },
+  )
+
+  const data = get(response, 'data', { ok: false })
+
+  return data.ok
+}
+
+async function signGmailPackage({
   name,
   contentType,
   size,
@@ -42,7 +55,7 @@ async function signGMailData({
   size: number
 }): Promise<string | boolean> {
   const response = await axios.get(
-    `${publicRuntimeConfig.API_HOST}/private/signGMailData`,
+    `${publicRuntimeConfig.API_HOST}/private/signGmailPackage`,
     {
       headers: getAuthHeaders(),
       params: { name, contentType, size },
@@ -60,5 +73,6 @@ async function signGMailData({
 
 export default {
   checkAuthorized,
-  signGMailData,
+  signGmailPackage,
+  sendNotification,
 }
