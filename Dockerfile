@@ -16,8 +16,15 @@ WORKDIR /app
 
 COPY --from=node_cache /cache/ .
 
-ADD . .
+COPY pages ./pages/
+COPY server ./server/
+COPY utils ./utils/
+COPY next.config.js ./next.config.js
+COPY tsconfig.json ./tsconfig.json
+COPY next-env.d.ts ./next-env.d.ts
+
+RUN yarn build
 
 EXPOSE 80
 
-CMD ["yarn", "start"]
+CMD ["yarn", "serve"]

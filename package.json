@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon server",
     "build": "next build",
+    "serve": "NODE_ENV=production node server",
     "lint": "cross-env CI=true eslint './{pages,server,utils}/**/*.{ts,tsx,json}'",
     "lint:fix": "yarn lint --fix",
     "typecheck": "tsc -p .",

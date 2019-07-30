@@ -37,7 +37,7 @@ export default class AcquisitionApp extends App {
     return loaded ? (
       <div className="block not-authorized">
         Not authorized. Please login at{' '}
-        <a href="https://humanos.c8.ai">HumanOS</a>, then return here
+        <a href="https://humanos.c8.ai">HumanOS</a>, then go back
       </div>
     ) : (
       <div className="block">Loading...</div>

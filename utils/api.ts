@@ -20,16 +20,20 @@ function getAuthHeaders() {
 }
 
 async function checkAuthorized(): Promise<boolean> {
-  const response = await axios.get(
-    `${publicRuntimeConfig.API_HOST}/private/checkAuth`,
-    {
-      headers: getAuthHeaders(),
-    },
-  )
+  try {
+    const response = await axios.get(
+      `${publicRuntimeConfig.API_HOST}/private/checkAuth`,
+      {
+        headers: getAuthHeaders(),
+      },
+    )
 
-  const data = get(response, 'data', { ok: false })
+    const data = get(response, 'data', { ok: false })
 
-  return data.ok
+    return data.ok
+  } catch (e) {
+    return false
+  }
 }
 
 async function sendNotification(): Promise<boolean> {
