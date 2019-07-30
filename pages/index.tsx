@@ -5,6 +5,8 @@ import {
   GoogleLoginResponseOffline,
 } from 'react-google-login'
 import axios from 'axios'
+import openSocket from 'socket.io-client'
+import qs from 'qs'
 
 import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
@@ -39,6 +41,7 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
   }
 }
 
+
 class App extends PureComponent<{}, State> {
   public state = {
     googleAuth: null,
@@ -51,20 +54,30 @@ class App extends PureComponent<{}, State> {
 
   public messages = []
 
+  public socket: any = null
+
   public async componentDidMount() {
     if (sessionStorage) {
       const googleData = sessionStorage.getItem('google')
 
       if (googleData) {
+        const googleAuth = JSON.parse(googleData)
         this.setState(
           {
-            googleAuth: JSON.parse(googleData),
+            googleAuth,
           },
           async () => {
-            const mailbox = await localApi.getAllMailbox()
+            this.socket = openSocket('/', { query: qs.stringify(googleAuth)})
+
+            this.socket.on('connect', () => {
+              console.log('connected', this.socket)
+              this.socket.emit('mailboxes', { data: 'test' })
+            })
+
+            /* const mailbox = await localApi.getAllMailbox()
             this.setState({
               mailbox,
-            })
+            }) */
           },
         )
       }
