@@ -7,14 +7,13 @@ import {
 import axios from 'axios'
 
 import get from 'lodash/get'
-import find from 'lodash/find'
 import sampleSize from 'lodash/sampleSize'
 
 import Timer from './timer'
 
 import { parseMessages } from '../utils'
-
-import './index.css'
+import localApi, { Mailbox } from '../utils/localApi'
+import api from '../utils/api'
 
 interface Auth {
   accessToken: string
@@ -22,17 +21,13 @@ interface Auth {
   expiresAt: number
 }
 
-interface Mailbox {
-  count: number
-}
-
 interface State {
-  auth?: Auth | null
+  googleAuth?: Auth | null
   error: boolean
   mailbox: Mailbox | null
   loadingMessages: boolean
   messagesExample: any
-  mailboxPath: string | undefined
+  fileUploading: boolean
 }
 
 function parseLoginResponse(response: GoogleLoginResponse): Auth {
@@ -44,107 +39,56 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
   }
 }
 
-function parseMailboxData(mailboxData: any) {
-  return {
-    count: get(mailboxData, 'exists') as number,
-  }
-}
-
 class App extends PureComponent<{}, State> {
   public state = {
-    auth: null,
+    googleAuth: null,
     error: false,
     mailbox: null,
     loadingMessages: false,
     messagesExample: [],
-    mailboxPath: undefined,
+    fileUploading: false,
   }
 
   public messages = []
 
-  public componentDidMount() {
+  public async componentDidMount() {
     if (sessionStorage) {
       const googleData = sessionStorage.getItem('google')
 
       if (googleData) {
         this.setState(
           {
-            auth: JSON.parse(googleData),
+            googleAuth: JSON.parse(googleData),
           },
           async () => {
-            this.getAllMailbox()
+            const mailbox = await localApi.getAllMailbox()
+            this.setState({
+              mailbox,
+            })
           },
         )
       }
     }
   }
 
-  private async getMailboxes() {
-    const { auth } = this.state
-
-    if (auth !== null) {
-      return axios.get('/mailboxes', {
-        params: auth,
-      })
-    }
-    return null
-  }
-
-  private async getAllMailbox() {
-    const mailboxes = await this.getMailboxes()
-
-    if (mailboxes) {
-      const gmail = find(
-        get(mailboxes, 'data.children', []),
-        mailbox => mailbox.name === '[Gmail]',
-      )
-
-      const allMailbox = find(
-        get(gmail, 'children', []),
-        mailbox => mailbox.specialUse === '\\All',
-      )
-
-      if (allMailbox) {
-        this.setState(
-          {
-            mailboxPath: allMailbox.path,
-          },
-          () => {
-            this.getMailbox(allMailbox.path)
-          },
-        )
-      }
-    }
-  }
-
-  private async getMailbox(mailbox: string) {
-    const { auth } = this.state
-
-    if (auth !== null) {
-      const mailboxResponse = await axios.get('/mailbox', {
-        params: { ...(auth || {}), mailbox },
-      })
-
-      if (mailboxResponse.data) {
-        this.setState({
-          mailbox: parseMailboxData(mailboxResponse.data),
-        })
-      }
-    }
-  }
-
-  private handleSuccessLogin = (
+  private handleSuccessLogin = async (
     response: GoogleLoginResponse | GoogleLoginResponseOffline,
-  ): void => {
-    const auth = parseLoginResponse(response as GoogleLoginResponse)
+  ): Promise<void> => {
+    const googleAuth = parseLoginResponse(response as GoogleLoginResponse)
 
-    sessionStorage.setItem('google', JSON.stringify(auth))
+    sessionStorage.setItem('google', JSON.stringify(googleAuth))
 
-    this.setState({
-      auth,
-    })
-
-    this.getAllMailbox()
+    this.setState(
+      {
+        googleAuth,
+      },
+      async () => {
+        const mailbox = await localApi.getAllMailbox()
+        this.setState({
+          mailbox,
+        })
+      },
+    )
   }
 
   private handleFailureLogin = (): void => {
@@ -154,7 +98,7 @@ class App extends PureComponent<{}, State> {
   private handleLogout = () => {
     sessionStorage.removeItem('google')
     this.setState({
-      auth: null,
+      googleAuth: null,
       mailbox: null,
       loadingMessages: false,
       error: false,
@@ -163,13 +107,17 @@ class App extends PureComponent<{}, State> {
   }
 
   private handleFetchMessages = async () => {
-    const { auth, mailboxPath } = this.state
+    const { googleAuth, mailbox } = this.state
 
-    if (typeof auth === 'object') {
+    if (typeof googleAuth === 'object') {
       this.setState({ loadingMessages: true })
 
       const messagesResponse = await axios.get('/messages', {
-        params: { ...(auth || {}), mailbox: mailboxPath, limit: '1:*' },
+        params: {
+          ...(googleAuth || {}),
+          mailbox: get(mailbox, 'path'),
+          limit: `1:${get(mailbox, 'count', '*')}`,
+        },
       })
 
       this.messages = await parseMessages(messagesResponse.data)
@@ -181,40 +129,69 @@ class App extends PureComponent<{}, State> {
     }
   }
 
+  private handleGenerateAndUploadFile = async () => {
+    this.setState({ fileUploading: true })
+    const blob = new Blob([JSON.stringify(this.messages)])
+
+    const file = new File([blob], 'data.json', { type: 'application/json' })
+
+    const s3Url = await api.signGMailData({
+      name: file.name,
+      contentType: 'application/json',
+      size: file.size,
+    })
+
+    if (typeof s3Url === 'string') {
+      await axios.put(s3Url, file, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+
+    this.setState({ fileUploading: false })
+  }
+
   public render() {
     const {
-      auth,
+      googleAuth,
       mailbox,
       error,
       loadingMessages,
       messagesExample,
+      fileUploading,
     } = this.state
 
     return (
       <>
         {error && <div>Error occured</div>}
-        {auth ? (
+        {googleAuth ? (
           <>
             <div className="header">
-              <div className="messages">
-                {mailbox && (
+              <div className="block messages">
+                {mailbox ? (
                   <>
-                    Messages count: {get(mailbox, 'count')}
+                    Mailbox: {get(mailbox, 'path')}
                     <br />
+                    <small>Messages count: {get(mailbox, 'count')}</small>
                     <br />
                     <button type="button" onClick={this.handleFetchMessages}>
                       Fetch messages
                     </button>
                   </>
+                ) : (
+                  <div>Loading mailbox data...</div>
                 )}
               </div>
-              <div className="user">
-                {get(auth, 'email')}
+              <div className="block user">
+                {get(googleAuth, 'email')}
                 <br />
                 <small>
                   Session expires at:{' '}
                   <Timer
-                    expiresAt={(get(auth, 'expiresAt') as unknown) as number}
+                    expiresAt={
+                      (get(googleAuth, 'expiresAt') as unknown) as number
+                    }
                     onTimedOut={this.handleLogout}
                   />
                 </small>
@@ -226,7 +203,9 @@ class App extends PureComponent<{}, State> {
             </div>
             <div className="content">
               {loadingMessages && (
-                <div className="loading">loading messages...</div>
+                <div className="loading">
+                  Fetching {get(mailbox, 'count')} messages...
+                </div>
               )}
               {messagesExample.length > 0 && (
                 <div className="acquired">
@@ -238,13 +217,23 @@ class App extends PureComponent<{}, State> {
                     {JSON.stringify(messagesExample, null, 2)}
                     {'\n'}...
                   </pre>
+                  <div>
+                    If all ok, you can{' '}
+                    <button
+                      type="button"
+                      onClick={this.handleGenerateAndUploadFile}
+                    >
+                      Upload this file
+                    </button>
+                    {fileUploading && <div>Uploading file</div>}
+                  </div>
                 </div>
               )}
             </div>
           </>
         ) : (
           <GoogleLogin
-            buttonText="Login"
+            buttonText="Connect GMail"
             clientId="720894567388-a4n3ni07clit5drod5kue0q4qcn18kpv.apps.googleusercontent.com"
             cookiePolicy="single_host_origin"
             scope="https://mail.google.com/"

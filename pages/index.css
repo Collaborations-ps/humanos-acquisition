@@ -1,7 +1,8 @@
 body {
   margin: 0;
   font-family: sans-serif;
-  background: #444;
+  background: linear-gradient(124deg, rgb(212, 47, 156), rgb(228, 50, 58));
+  color: #333;
   padding: 16px;
 }
 
@@ -16,6 +17,14 @@ code {
     monospace;
 }
 
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
 .header {
   display: flex;
   flex-direction: row;
@@ -23,7 +32,7 @@ code {
   width: 100%;
 }
 
-.user {
+.block {
   background: white;
   border-radius: 8px;
   padding: 16px;
@@ -35,12 +44,7 @@ code {
   border-radius: 8px;
   margin: 16px 0;
   padding: 16px;
-}
-
-.messages {
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
+  min-height: calc(100vh - 144px);
 }
 
 pre {
