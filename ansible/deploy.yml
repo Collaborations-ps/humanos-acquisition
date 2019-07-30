@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: no
+
+  vars_prompt:
+    - name: "image_tag"
+      prompt: "Docker image tag"
+      private: no
+
+  environment:
+    AWS_PROFILE: "{{ aws_profile }}"
+
+  tasks:
+    - include_tasks: vars-tasks.yml
+    - include_tasks: deploy-tasks.yml

@@ -1,0 +1,17 @@
+env: staging
+node_env: produciton
+port: 80
+api_host: https://api.humanos.c8.ai
+aws_region: us-east-1
+cluster: humanos-staging
+acquisition_image_name: humanos-acquisition
+acquisition_image_repository: 378762170585.dkr.ecr.us-east-1.amazonaws.com/humanos-acquisition
+task_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-staging-task-role
+execution_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-staging-execution-role
+acquisition_cpu: 512
+acquisition_memory: 1024
+acquisition_container_cpu: 384
+acquisition_container_memory: 768
+acquisition_desired_count: 1
+subnets: ["subnet-0586fc0f4122979b6", "subnet-083a17af3ca336fe9"]
+security_groups: ["sg-046be01d3032ebc96"]
