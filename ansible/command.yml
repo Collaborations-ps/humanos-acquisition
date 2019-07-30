@@ -1,0 +1,46 @@
+---
+- hosts: all
+  gather_facts: no
+
+  vars_prompt:
+    - name: "run_command"
+      prompt: "Input command (example: yarn db:migrate)"
+      private: no
+
+  environment:
+    AWS_PROFILE: "{{ aws_profile }}"
+
+  tasks:
+    - name: List task definitions
+      shell: aws ecs list-task-definitions --family-prefix acquisition --sort DESC
+      register: task_definitions
+
+    - name: Take latest task definition
+      set_fact:
+        latest_task_definition: "{{ (task_definitions.stdout | from_json).taskDefinitionArns[0] }}"
+
+    - name: Prepare command task
+      local_action: template src=templates/run_command.json.j2 dest=./run_command.json
+      vars:
+        task_definition_arn: "{{ latest_task_definition }}"
+        command: "{{ run_command.split(' ') | to_json }}"
+
+    - name: Run command
+      shell: aws ecs run-task --cli-input-json file://run_command.json
+      register: command_task_result
+
+    - set_fact:
+        command_task_arn: "{{ (command_task_result.stdout | from_json).tasks[0].taskArn }}"
+
+    - name: Wait for result
+      shell: aws ecs describe-tasks --tasks {{ command_task_arn }} --cluster {{ cluster }}
+      register: task_description
+      until: (task_description.stdout | from_json).tasks[0].lastStatus == 'STOPPED'
+      retries: 50
+
+    - set_fact:
+        exit_codes: "{{ (task_description.stdout | from_json).tasks[0].containers | map(attribute=\"exitCode\") | select(\"defined\") | select(\"equalto\", 1) | list }}"
+
+    - fail:
+        msg: "Task has been failed"
+      when: exit_codes != []

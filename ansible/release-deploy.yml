@@ -1,0 +1,16 @@
+---
+- hosts: all
+  gather_facts: no
+
+  vars_prompt:
+    - name: "branch"
+      prompt: "branch"
+      private: no
+
+  environment:
+    AWS_PROFILE: "{{ aws_profile }}"
+
+  tasks:
+    - include_tasks: vars-tasks.yml
+    - include_tasks: release-tasks.yml
+    - include_tasks: deploy-tasks.yml

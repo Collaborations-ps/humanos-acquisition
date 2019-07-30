@@ -1,0 +1,10 @@
+{
+  "cluster": "{{ cluster }}",
+  "service": "acquisition",
+  "taskDefinition": "{{ task_definition_arn }}",
+  "desiredCount": {{ acquisition_desired_count }},
+  "deploymentConfiguration": {
+      "maximumPercent": 200,
+      "minimumHealthyPercent": 100
+  }
+}

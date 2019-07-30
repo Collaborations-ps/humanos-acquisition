@@ -1,0 +1,14 @@
+- name: Prepare task definition
+  local_action: template src=templates/task_definition.json.j2 dest=./task_definition.json
+
+- name: Register task definition
+  shell:  aws ecs register-task-definition --cli-input-json file://task_definition.json
+  register: task_definition
+
+- name: Prepare service
+  local_action: template src=templates/update_service.json.j2 dest=./update_service.json
+  vars:
+    task_definition_arn: "{{ (task_definition.stdout | from_json).taskDefinition.taskDefinitionArn }}"
+
+- name: Update service
+  shell:  aws ecs update-service --cli-input-json file://update_service.json
