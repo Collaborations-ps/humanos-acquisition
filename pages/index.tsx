@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { PureComponent, createRef } from 'react'
 import {
   GoogleLogin,
   GoogleLoginResponse,
@@ -10,6 +10,7 @@ import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
 import Timer from './timer'
+import Log from './log'
 
 import { parseMessages } from '../utils'
 import localApi, { Mailbox } from '../utils/localApi'
@@ -51,6 +52,8 @@ class App extends PureComponent<{}, State> {
 
   public messages = []
 
+  private log = createRef<Log>()
+
   public async componentDidMount() {
     if (sessionStorage) {
       const googleData = sessionStorage.getItem('google')
@@ -61,7 +64,12 @@ class App extends PureComponent<{}, State> {
             googleAuth: JSON.parse(googleData),
           },
           async () => {
+            this.addLog('Authorized with google')
+
             const mailbox = await localApi.getAllMailbox()
+
+            this.addLog(`Mailbox "${get(mailbox, 'path')}" loaded`)
+
             this.setState({
               mailbox,
             })
@@ -83,7 +91,12 @@ class App extends PureComponent<{}, State> {
         googleAuth,
       },
       async () => {
+        this.addLog('Authorized with google')
+
         const mailbox = await localApi.getAllMailbox()
+
+        this.addLog(`Mailbox "${get(mailbox, 'path')}" loaded`)
+
         this.setState({
           mailbox,
         })
@@ -110,6 +123,7 @@ class App extends PureComponent<{}, State> {
     const { googleAuth, mailbox } = this.state
 
     if (typeof googleAuth === 'object') {
+      this.addLog('Start fetching messages...')
       this.setState({ loadingMessages: true })
 
       const messagesResponse = await axios.get('/messages', {
@@ -120,7 +134,13 @@ class App extends PureComponent<{}, State> {
         },
       })
 
+      this.addLog('Messages fetched')
+
+      this.addLog('Start parsing messages...')
+
       this.messages = await parseMessages(messagesResponse.data)
+
+      this.addLog('Messages parsed')
 
       this.setState({
         loadingMessages: false,
@@ -130,10 +150,16 @@ class App extends PureComponent<{}, State> {
   }
 
   private handleGenerateAndUploadFile = async () => {
+    this.addLog('Create file for uploading...')
+
     this.setState({ fileUploading: true })
     const blob = new Blob([JSON.stringify(this.messages)])
 
     const file = new File([blob], 'data.json', { type: 'application/json' })
+
+    this.addLog('File created')
+
+    this.addLog('Sign file for S3...')
 
     const s3Url = await api.signGmailPackage({
       name: file.name,
@@ -141,17 +167,29 @@ class App extends PureComponent<{}, State> {
       size: file.size,
     })
 
+    this.addLog('File signed')
+
     if (typeof s3Url === 'string') {
+      this.addLog('Upload file...')
       await axios.put(s3Url, file, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
+      this.addLog('File uploaded')
 
+      this.addLog('Send notification')
       await api.sendNotification()
+      this.addLog('Notification sent')
     }
 
     this.setState({ fileUploading: false })
+  }
+
+  private addLog(message: string) {
+    if (this.log.current) {
+      this.log.current.add(message)
+    }
   }
 
   public render() {
@@ -236,13 +274,14 @@ class App extends PureComponent<{}, State> {
         ) : (
           <GoogleLogin
             buttonText="Connect GMail"
-            clientId="720894567388-a4n3ni07clit5drod5kue0q4qcn18kpv.apps.googleusercontent.com"
+            clientId="219313047580-d21scatk83efg15guk8qke0job6agvcb.apps.googleusercontent.com"
             cookiePolicy="single_host_origin"
             scope="https://mail.google.com/"
             onFailure={this.handleFailureLogin}
             onSuccess={this.handleSuccessLogin}
           />
         )}
+        <Log ref={this.log} />
       </>
     )
   }

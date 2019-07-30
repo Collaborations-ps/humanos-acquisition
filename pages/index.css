@@ -52,3 +52,37 @@ pre {
   padding: 4px;
   border: 1px solid #a3a3a3;
 }
+
+.log {
+  position: fixed;
+  bottom: -1px;
+  right: 8px;
+  background: white;
+  border: 1px solid #333;
+  width: 640px;
+  overflow: scroll;
+  transition: all 0.3s ease;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  background: #a3a3a3;
+  padding: 8px;
+  outline: none;
+  cursor: pointer;
+}
+
+.log-content {
+  height: 300px;
+  padding: 8px;
+  font-family: monospace;
+}
+
+.log.closed {
+  transform: translateY(300px);
+}
