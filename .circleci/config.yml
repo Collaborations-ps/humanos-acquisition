@@ -21,6 +21,7 @@ jobs:
           root: .
           paths:
             - node_modules
+
   build:
     <<: *defaults
     steps:
@@ -32,14 +33,6 @@ jobs:
           root: .
           paths:
             - .next
-
-  test:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run: yarn lint:fix # TODO: temporary linter
 
   deploy:
     docker:
@@ -81,15 +74,13 @@ workflows:
   build_accept_deploy:
     jobs:
       - prepare
-      - test:
-          requires:
-            - prepare
       - build:
           requires:
-            - test
+            - prepare
       - deploy:
           requires:
-            - test
+            - prepare
+            - build
           filters:
             branches:
               only:
