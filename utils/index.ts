@@ -7,10 +7,11 @@ export function parseMessages(messages: [any]) {
     )
 
     const parsed = {
+      id: message['x-gm-msgid'],
+      threadId: message['x-gm-thrid'],
       from: [],
       to: [],
       date: '',
-      threadId: message['x-gm-thrid'],
       cc: [],
     }
 
