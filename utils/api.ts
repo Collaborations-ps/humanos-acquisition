@@ -36,11 +36,12 @@ async function checkAuthorized(): Promise<boolean> {
   }
 }
 
-async function sendNotification(): Promise<boolean> {
+async function sendNotification(email: string): Promise<boolean> {
   const response = await axios.get(
     `${publicRuntimeConfig.API_HOST}/private/gmailPackageUploaded`,
     {
       headers: getAuthHeaders(),
+      params: { email },
     },
   )
 

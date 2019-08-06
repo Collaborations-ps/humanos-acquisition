@@ -150,6 +150,7 @@ class App extends PureComponent<{}, State> {
   }
 
   private handleGenerateAndUploadFile = async () => {
+    const { googleAuth } = this.state
     this.addLog('Create file for uploading...')
 
     this.setState({ fileUploading: true })
@@ -179,7 +180,7 @@ class App extends PureComponent<{}, State> {
       this.addLog('File uploaded')
 
       this.addLog('Send notification')
-      await api.sendNotification()
+      await api.sendNotification(get(googleAuth, 'email') || '')
       this.addLog('Notification sent')
     }
 
