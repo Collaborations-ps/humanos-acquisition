@@ -1,0 +1,17 @@
+env: demo
+node_env: produciton
+port: 80
+api_host: https://api.demo.humanos.c8.ai
+aws_region: us-west-2
+cluster: humanos-demo
+acquisition_image_name: humanos-acquisition
+acquisition_image_repository: 378762170585.dkr.ecr.us-west-2.amazonaws.com/humanos-acquisition
+task_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-demo
+execution_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-demo
+acquisition_cpu: 512
+acquisition_memory: 1024
+acquisition_container_cpu: 384
+acquisition_container_memory: 768
+acquisition_desired_count: 1
+subnets: ["subnet-0bf773a09d542e9db", "subnet-02b2b3f9da61fcfd5"]
+security_groups: ["sg-018f235f5d9a92550"]
