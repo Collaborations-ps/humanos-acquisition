@@ -24,6 +24,7 @@
     "lodash": "4.17.15",
     "luxon": "1.17.2",
     "next": "9.0.2",
+    "next-images": "1.1.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-google-login": "5.0.4",
