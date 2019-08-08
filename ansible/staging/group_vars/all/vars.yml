@@ -2,6 +2,7 @@ env: staging
 node_env: produciton
 port: 80
 api_host: https://api.humanos.c8.ai
+web_url: https://humanos.c8.ai
 aws_region: us-east-1
 cluster: humanos-staging
 acquisition_image_name: humanos-acquisition

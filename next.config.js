@@ -7,6 +7,7 @@ module.exports = withImages(
   withCSS({
     publicRuntimeConfig: {
       API_HOST: process.env.API_HOST,
+      WEB_URL: process.env.WEB_URL,
     },
   }),
 )

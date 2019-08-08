@@ -2,6 +2,7 @@ env: demo
 node_env: produciton
 port: 80
 api_host: https://api.demo.humanos.c8.ai
+web_url: https://demo.humanos.c8.ai
 aws_region: us-west-2
 cluster: humanos-demo
 acquisition_image_name: humanos-acquisition
