@@ -9,12 +9,19 @@ import axios from 'axios'
 import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
-import Timer from './timer'
-import Log from './log'
-
 import { parseMessages } from '../utils'
 import localApi, { Mailbox } from '../utils/localApi'
 import api from '../utils/api'
+
+enum STEPS {
+  findingMailbox,
+  fetchMessages,
+  messagesFetched,
+  signingFile,
+  uploadingFile,
+  notifyApp,
+  done,
+}
 
 interface Auth {
   accessToken: string
@@ -26,9 +33,9 @@ interface State {
   googleAuth?: Auth | null
   error: boolean
   mailbox: Mailbox | null
-  loadingMessages: boolean
   messagesExample: any
-  fileUploading: boolean
+  exampleShown: boolean
+  step: STEPS
 }
 
 function parseLoginResponse(response: GoogleLoginResponse): Auth {
@@ -40,19 +47,21 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
   }
 }
 
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 class App extends PureComponent<{}, State> {
   public state = {
     googleAuth: null,
     error: false,
     mailbox: null,
-    loadingMessages: false,
     messagesExample: [],
-    fileUploading: false,
+    exampleShown: false,
+    step: STEPS.findingMailbox,
   }
 
   public messages = []
-
-  private log = createRef<Log>()
 
   public async componentDidMount() {
     if (sessionStorage) {
@@ -64,15 +73,15 @@ class App extends PureComponent<{}, State> {
             googleAuth: JSON.parse(googleData),
           },
           async () => {
-            this.addLog('Authorized with google')
-
             const mailbox = await localApi.getAllMailbox()
 
-            this.addLog(`Mailbox "${get(mailbox, 'path')}" loaded`)
-
-            this.setState({
-              mailbox,
-            })
+            this.setState(
+              {
+                mailbox,
+                step: STEPS.fetchMessages,
+              },
+              this.handleFetchMessages,
+            )
           },
         )
       }
@@ -91,15 +100,15 @@ class App extends PureComponent<{}, State> {
         googleAuth,
       },
       async () => {
-        this.addLog('Authorized with google')
-
         const mailbox = await localApi.getAllMailbox()
 
-        this.addLog(`Mailbox "${get(mailbox, 'path')}" loaded`)
-
-        this.setState({
-          mailbox,
-        })
+        this.setState(
+          {
+            mailbox,
+            step: STEPS.fetchMessages,
+          },
+          this.handleFetchMessages,
+        )
       },
     )
   }
@@ -113,7 +122,7 @@ class App extends PureComponent<{}, State> {
     this.setState({
       googleAuth: null,
       mailbox: null,
-      loadingMessages: false,
+      exampleShown: false,
       error: false,
       messagesExample: [],
     })
@@ -123,9 +132,6 @@ class App extends PureComponent<{}, State> {
     const { googleAuth, mailbox } = this.state
 
     if (typeof googleAuth === 'object') {
-      this.addLog('Start fetching messages...')
-      this.setState({ loadingMessages: true })
-
       const messagesResponse = await axios.get('/messages', {
         params: {
           ...(googleAuth || {}),
@@ -134,33 +140,26 @@ class App extends PureComponent<{}, State> {
         },
       })
 
-      this.addLog('Messages fetched')
-
-      this.addLog('Start parsing messages...')
-
       this.messages = await parseMessages(messagesResponse.data)
 
-      this.addLog('Messages parsed')
-
       this.setState({
-        loadingMessages: false,
+        step: STEPS.messagesFetched,
         messagesExample: sampleSize(this.messages, 10),
       })
     }
   }
 
+  private handleToggleExample = () => {
+    this.setState(state => ({ exampleShown: !state.exampleShown }))
+  }
+
   private handleGenerateAndUploadFile = async () => {
     const { googleAuth } = this.state
-    this.addLog('Create file for uploading...')
 
-    this.setState({ fileUploading: true })
+    this.setState({ step: STEPS.signingFile })
     const blob = new Blob([JSON.stringify(this.messages)])
 
     const file = new File([blob], 'data.json', { type: 'application/json' })
-
-    this.addLog('File created')
-
-    this.addLog('Sign file for S3...')
 
     const s3Url = await api.signGmailPackage({
       name: file.name,
@@ -168,108 +167,108 @@ class App extends PureComponent<{}, State> {
       size: file.size,
     })
 
-    this.addLog('File signed')
-
     if (typeof s3Url === 'string') {
-      this.addLog('Upload file...')
+      this.setState({ step: STEPS.uploadingFile })
       await axios.put(s3Url, file, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      this.addLog('File uploaded')
 
-      this.addLog('Send notification')
+      this.setState({ step: STEPS.notifyApp })
       await api.sendNotification(get(googleAuth, 'email') || '')
-      this.addLog('Notification sent')
     }
 
-    this.setState({ fileUploading: false })
+    this.setState({ step: STEPS.done })
   }
 
-  private addLog(message: string) {
-    if (this.log.current) {
-      this.log.current.add(message)
+  private renderLoading(children: any) {
+    return (
+      <div className="loading">
+        <img src="/static/loader.svg" /> {children}
+      </div>
+    )
+  }
+
+  private renderStatus() {
+    const { step, googleAuth, mailbox } = this.state
+
+    switch (step) {
+      case STEPS.findingMailbox:
+        return this.renderLoading(
+          `Search for main mailbox in "${get(googleAuth, 'email')}"`,
+        )
+      case STEPS.fetchMessages:
+        return this.renderLoading(
+          `Fetching ${get(mailbox, 'count')} messages from "${get(
+            mailbox,
+            'path',
+          )}"`,
+        )
+      case STEPS.messagesFetched:
+        return (
+          <div className="upload">
+            {this.messages.length} messages loaded!{' '}
+            <button type="button" onClick={this.handleGenerateAndUploadFile}>
+              Upload messages metadata
+            </button>
+            <small>
+              You can view{' '}
+              <a href="#" onClick={this.handleToggleExample}>
+                example
+              </a>{' '}
+              of metadata acquired
+            </small>
+          </div>
+        )
+      case STEPS.signingFile:
+        return this.renderLoading(`Signing metadata file to upload...`)
+      case STEPS.uploadingFile:
+        return this.renderLoading(`Uploading metadata file...`)
+      case STEPS.notifyApp:
+        return this.renderLoading(`Notify application about upload...`)
+      case STEPS.done:
+        return (
+          <div className="upload">
+            All done! <br />
+            We notify you when data will be processed. <br />
+            Now you can close this window.
+          </div>
+        )
+      default:
+        break
     }
   }
 
   public render() {
-    const {
-      googleAuth,
-      mailbox,
-      error,
-      loadingMessages,
-      messagesExample,
-      fileUploading,
-    } = this.state
+    const { googleAuth, error, exampleShown, messagesExample } = this.state
 
     return (
       <>
         {error && <div>Error occured</div>}
         {googleAuth ? (
           <>
+            {exampleShown && (
+              <div className="example">
+                <button type="button" onClick={this.handleToggleExample}>
+                  close
+                </button>
+                <pre>
+                  ...{'\n'}
+                  {JSON.stringify(messagesExample, null, 2)}
+                  {'\n'}...
+                </pre>
+              </div>
+            )}
+            <div className="overlay">{this.renderStatus()}</div>
             <div className="header">
-              <div className="block messages">
-                {mailbox ? (
-                  <>
-                    Mailbox: {get(mailbox, 'path')}
-                    <br />
-                    <small>Messages count: {get(mailbox, 'count')}</small>
-                    <br />
-                    <button type="button" onClick={this.handleFetchMessages}>
-                      Fetch messages
-                    </button>
-                  </>
-                ) : (
-                  <div>Loading mailbox data...</div>
-                )}
-              </div>
-              <div className="block user">
-                {get(googleAuth, 'email')}
-                <br />
-                <small>
-                  Session expires at:{' '}
-                  <Timer
-                    expiresAt={
-                      (get(googleAuth, 'expiresAt') as unknown) as number
-                    }
-                    onTimedOut={this.handleLogout}
-                  />
-                </small>
-                <br />
-                <button type="button" onClick={this.handleLogout}>
-                  Logout
-                </button>{' '}
-              </div>
-            </div>
-            <div className="content">
-              {loadingMessages && (
-                <div className="loading">
-                  Fetching {get(mailbox, 'count')} messages...
-                </div>
-              )}
-              {messagesExample.length > 0 && (
-                <div className="acquired">
-                  Example of data we acquired (example: {messagesExample.length}
-                  , total loaded: {this.messages.length}):
-                  <br />
-                  <pre>
-                    ...{'\n'}
-                    {JSON.stringify(messagesExample, null, 2)}
-                    {'\n'}...
-                  </pre>
-                  <div>
-                    If all ok, you can{' '}
-                    <button
-                      type="button"
-                      onClick={this.handleGenerateAndUploadFile}
-                    >
-                      Upload this file
-                    </button>
-                    {fileUploading && <div>Uploading file</div>}
-                  </div>
-                </div>
-              )}
+              <button
+                className="small"
+                type="button"
+                onClick={this.handleLogout}
+              >
+                Logout
+              </button>
             </div>
           </>
         ) : (
@@ -282,7 +281,6 @@ class App extends PureComponent<{}, State> {
             onSuccess={this.handleSuccessLogin}
           />
         )}
-        <Log ref={this.log} />
       </>
     )
   }

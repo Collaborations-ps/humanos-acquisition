@@ -2,6 +2,8 @@ import React from 'react'
 import App, { Container, AppContext } from 'next/app'
 import Head from 'next/head'
 
+import { publicRuntimeConfig } from '../utils/config'
+
 import Api from '../utils/api'
 
 import './index.css'
@@ -37,7 +39,7 @@ export default class AcquisitionApp extends App {
     return loaded ? (
       <div className="block not-authorized">
         Not authorized. Please login at{' '}
-        <a href="https://humanos.c8.ai">HumanOS</a>, then go back
+        <a href={publicRuntimeConfig.WEB_URL}>HumanOS</a>, then go back
       </div>
     ) : (
       <div className="block">Loading...</div>
@@ -52,8 +54,18 @@ export default class AcquisitionApp extends App {
       <Container>
         <Head>
           <title>HumanOS GMail Acquisition</title>
+          <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
+          <link
+            data-react-helmet="true"
+            href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700"
+            rel="stylesheet"
+          />
         </Head>
         <div className="main">
+          <div className="logo">
+            <img alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
+            &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
+          </div>
           {authorized ? (
             <Component {...pageProps} />
           ) : (
