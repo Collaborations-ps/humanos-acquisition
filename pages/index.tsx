@@ -9,8 +9,8 @@ import axios from 'axios'
 import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
-import Timer from './timer'
-import Log from './log'
+import Timer from '../components/timer'
+import Log from '../components/log'
 
 import { parseMessages } from '../utils'
 import localApi, { Mailbox } from '../utils/localApi'

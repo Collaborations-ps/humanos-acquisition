@@ -3,7 +3,7 @@ body {
   font-family: sans-serif;
   background: linear-gradient(124deg, rgb(212, 47, 156), rgb(228, 50, 58));
   color: #333;
-  padding: 16px;
+  font-family: Montserrat, "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
 html,
@@ -23,6 +23,7 @@ code {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 16px;
 }
 
 .header {
@@ -85,4 +86,24 @@ pre {
 
 .log.closed {
   transform: translateY(300px);
+}
+
+
+.logo {
+  color: white;
+  position: absolute;
+  top: 20px;
+  left: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.logo span {
+  font-weight: 500;
+}
+
+.logo img {
+  width: 100px;
+  margin-right: 4px;
+  margin-top: -3px;
 }

@@ -20,6 +20,6 @@
     "baseUrl": "./",
     "isolatedModules": true
   },
-  "include": ["pages", "server", "utils"],
+  "include": ["assets", "components", "pages", "server", "utils"],
   "exclude": ["node_modules", "build"]
 }
