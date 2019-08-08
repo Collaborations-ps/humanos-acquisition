@@ -9,8 +9,6 @@ import axios from 'axios'
 import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
-import Timer from '../components/timer'
-
 import { parseMessages } from '../utils'
 import localApi, { Mailbox } from '../utils/localApi'
 import api from '../utils/api'
@@ -231,7 +229,11 @@ class App extends PureComponent<{}, State> {
         return this.renderLoading(`Notify application about upload...`)
       case STEPS.done:
         return (
-          <div className="upload">All done! Now you can close this window</div>
+          <div className="upload">
+            All done! <br />
+            We notify you when data will be processed. <br />
+            Now you can close this window.
+          </div>
         )
       default:
         break
@@ -261,8 +263,8 @@ class App extends PureComponent<{}, State> {
             <div className="overlay">{this.renderStatus()}</div>
             <div className="header">
               <button
-                type="button"
                 className="small"
+                type="button"
                 onClick={this.handleLogout}
               >
                 Logout

@@ -43,7 +43,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        moduleDirectory: ['node_modules', 'server', 'pages', 'assets', 'components'],
+        moduleDirectory: ['node_modules', 'server', 'pages', 'assets'],
         extensions: ['.js', '.ts', '.tsx'],
       },
     },

@@ -52,11 +52,16 @@ export default class AcquisitionApp extends App {
       <Container>
         <Head>
           <title>HumanOS GMail Acquisition</title>
-          <link data-react-helmet="true" href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700" rel="stylesheet"></link>
+          <link
+            data-react-helmet="true"
+            href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700"
+            rel="stylesheet"
+          />
         </Head>
         <div className="main">
           <div className="logo">
-          <img src="/static/logo.svg" />&nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
+            <img alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
+            &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
           </div>
           {authorized ? (
             <Component {...pageProps} />
