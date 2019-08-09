@@ -54,7 +54,11 @@ export default class AcquisitionApp extends App {
       <Container>
         <Head>
           <title>HumanOS GMail Acquisition</title>
-          <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
+          <link
+            href="/static/favicon.ico"
+            rel="shortcut icon"
+            type="image/x-icon"
+          />
           <link
             data-react-helmet="true"
             href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700"
