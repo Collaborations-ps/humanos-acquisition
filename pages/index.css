@@ -13,7 +13,7 @@ body,
 }
 
 a {
-  color: white;
+  color: #db3a7b;
 }
 
 button {
@@ -133,6 +133,10 @@ pre {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.upload a {
+  color: white;
 }
 
 .upload button {

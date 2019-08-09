@@ -1,4 +1,4 @@
-import React, { PureComponent, createRef } from 'react'
+import React, { PureComponent } from 'react'
 import {
   GoogleLogin,
   GoogleLoginResponse,
@@ -14,6 +14,7 @@ import localApi, { Mailbox } from '../utils/localApi'
 import api from '../utils/api'
 
 enum STEPS {
+  initial,
   findingMailbox,
   fetchMessages,
   messagesFetched,
@@ -22,6 +23,15 @@ enum STEPS {
   notifyApp,
   done,
 }
+
+const BLOCKED_STEPS = [
+  STEPS.findingMailbox,
+  STEPS.fetchMessages,
+  STEPS.messagesFetched,
+  STEPS.signingFile,
+  STEPS.uploadingFile,
+  STEPS.notifyApp,
+]
 
 interface Auth {
   accessToken: string
@@ -47,8 +57,12 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
   }
 }
 
-function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+function renderLoading(children: any) {
+  return (
+    <div className="loading">
+      <img alt="loader" src="/static/loader.svg" /> {children}
+    </div>
+  )
 }
 
 class App extends PureComponent<{}, State> {
@@ -58,7 +72,7 @@ class App extends PureComponent<{}, State> {
     mailbox: null,
     messagesExample: [],
     exampleShown: false,
-    step: STEPS.findingMailbox,
+    step: STEPS.initial,
   }
 
   public messages = []
@@ -71,6 +85,7 @@ class App extends PureComponent<{}, State> {
         this.setState(
           {
             googleAuth: JSON.parse(googleData),
+            step: STEPS.findingMailbox,
           },
           async () => {
             const mailbox = await localApi.getAllMailbox()
@@ -86,6 +101,26 @@ class App extends PureComponent<{}, State> {
         )
       }
     }
+
+    window.addEventListener('beforeunload', this.handleUnload)
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.handleUnload)
+  }
+
+  private handleUnload = (e: any) => {
+    const { step } = this.state
+
+    if (BLOCKED_STEPS.includes(step)) {
+      e.preventDefault()
+
+      e.returnValue = 'We processing GMail, please wait until it will be done'
+
+      return e.returnValue
+    }
+
+    return true
   }
 
   private handleSuccessLogin = async (
@@ -98,6 +133,7 @@ class App extends PureComponent<{}, State> {
     this.setState(
       {
         googleAuth,
+        step: STEPS.findingMailbox,
       },
       async () => {
         const mailbox = await localApi.getAllMailbox()
@@ -182,24 +218,16 @@ class App extends PureComponent<{}, State> {
     this.setState({ step: STEPS.done })
   }
 
-  private renderLoading(children: any) {
-    return (
-      <div className="loading">
-        <img src="/static/loader.svg" /> {children}
-      </div>
-    )
-  }
-
   private renderStatus() {
     const { step, googleAuth, mailbox } = this.state
 
     switch (step) {
       case STEPS.findingMailbox:
-        return this.renderLoading(
+        return renderLoading(
           `Search for main mailbox in "${get(googleAuth, 'email')}"`,
         )
       case STEPS.fetchMessages:
-        return this.renderLoading(
+        return renderLoading(
           `Fetching ${get(mailbox, 'count')} messages from "${get(
             mailbox,
             'path',
@@ -222,11 +250,11 @@ class App extends PureComponent<{}, State> {
           </div>
         )
       case STEPS.signingFile:
-        return this.renderLoading(`Signing metadata file to upload...`)
+        return renderLoading(`Signing metadata file to upload...`)
       case STEPS.uploadingFile:
-        return this.renderLoading(`Uploading metadata file...`)
+        return renderLoading(`Uploading metadata file...`)
       case STEPS.notifyApp:
-        return this.renderLoading(`Notify application about upload...`)
+        return renderLoading(`Notify application about upload...`)
       case STEPS.done:
         return (
           <div className="upload">
@@ -236,7 +264,7 @@ class App extends PureComponent<{}, State> {
           </div>
         )
       default:
-        break
+        return null
     }
   }
 
