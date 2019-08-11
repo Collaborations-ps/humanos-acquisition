@@ -64,7 +64,7 @@ jobs:
           name: Deploy to AWS
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              AWS_DEFAULT_REGION=us-east-1 ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook ansible/release-deploy.yml -i ansible/staging --extra-vars "branch=master aws_profile=default" -v
+              AWS_DEFAULT_REGION=us-west-2 ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook ansible/release-deploy.yml -i ansible/staging --extra-vars "branch=master aws_profile=default" -v
             elif [ "${CIRCLE_BRANCH}" == "demo" ]; then
               AWS_DEFAULT_REGION=us-west-2 ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook ansible/release-deploy.yml -i ansible/demo --extra-vars "branch=demo aws_profile=default" -v
             elif [ "${CIRCLE_BRANCH}" == "production" ]; then
