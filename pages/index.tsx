@@ -236,17 +236,13 @@ class App extends PureComponent<{}, State> {
       case STEPS.messagesFetched:
         return (
           <div className="upload">
-            {this.messages.length} messages loaded!{' '}
+            We have fetched from/to information for all messages in your inbox (see data sample <a href="#" onClick={this.handleToggleExample}>here</a>)
+            <br />
+            <br />
+            Do you want to  Continue and upload them to HumanOS?
             <button type="button" onClick={this.handleGenerateAndUploadFile}>
-              Upload messages metadata
+              Upload
             </button>
-            <small>
-              You can view{' '}
-              <a href="#" onClick={this.handleToggleExample}>
-                example
-              </a>{' '}
-              of metadata acquired
-            </small>
           </div>
         )
       case STEPS.signingFile:
