@@ -236,11 +236,13 @@ class App extends PureComponent<{}, State> {
       case STEPS.messagesFetched:
         return (
           <div className="upload">
-            We have fetched from/to information for all messages in your inbox (see data sample <a href="#" onClick={this.handleToggleExample}>here</a>)
-            <br />
-            <br />
-            Do you want to  Continue and upload them to HumanOS?
-            <button type="button" onClick={this.handleGenerateAndUploadFile}>
+            <div className="text">
+              We have fetched from/to information for all messages in your inbox (see data sample <a href="#" >here</a>)
+              <br />
+              <br />
+              Do you want to  Continue and upload them to HumanOS?
+            </div>
+            <button type="button" >
               Upload
             </button>
           </div>
