@@ -3,8 +3,6 @@ const get = require('lodash/get')
 const createImapClient = require('../services/imap')
 
 async function getMessages(ctx) {
-  ctx.request.socket.setTimeout(10 * 60 * 1000)
-
   const { client, error } = await createImapClient(
     get(ctx, 'query.email'),
     get(ctx, 'query.accessToken'),
