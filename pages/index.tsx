@@ -237,12 +237,12 @@ class App extends PureComponent<{}, State> {
         return (
           <div className="upload">
             <div className="text">
-              We have fetched from/to information for all messages in your inbox (see data sample <a href="#" >here</a>)
+              We have fetched from/to information for all messages in your inbox (total: {this.messages.length}, see data sample <a href="#" onClick={this.handleToggleExample}>here</a>)
               <br />
               <br />
               Do you want to  Continue and upload them to HumanOS?
             </div>
-            <button type="button" >
+            <button type="button" onClick={this.handleGenerateAndUploadFile}>
               Upload
             </button>
           </div>
