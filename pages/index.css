@@ -51,10 +51,6 @@ button:active {
   opacity: 0.8;
 }
 
-button.small {
-  font-size: 14px;
-}
-
 .main {
   display: flex;
   flex-direction: column;
@@ -133,6 +129,7 @@ pre {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: white;
 }
 
 .upload a {
@@ -141,6 +138,12 @@ pre {
 
 .upload button {
   margin: 16px 0;
+  color: white;
+  background-color: #449aff;
+}
+.upload .text {
+  width: 100%;
+  
 }
 
 .example {
