@@ -1,4 +1,4 @@
-env: production
+env: prod
 node_env: produciton
 port: 80
 api_host: https://api.os.collaboration.ai
