@@ -24,7 +24,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-            "awslogs-group": "{{ env }}/acquisition.log",
+            "awslogs-group": "humanos-{{ env }}/ecs/acquisition.log",
             "awslogs-region": "{{ aws_region }}",
             "awslogs-stream-prefix": "acquisition"
         }
