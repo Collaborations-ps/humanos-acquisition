@@ -22,7 +22,9 @@ app.prepare().then(() => {
   })
 
   server.use(router.routes())
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`)
-  }).setTimeout(30 * 60 * 1000)
+  server
+    .listen(port, () => {
+      console.log(`> Ready on http://localhost:${port}`)
+    })
+    .setTimeout(30 * 60 * 1000)
 })
