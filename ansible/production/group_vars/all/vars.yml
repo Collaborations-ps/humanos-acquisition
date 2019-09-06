@@ -8,8 +8,8 @@ aws_region: us-west-2
 cluster: humanos-prod
 acquisition_image_name: humanos-acquisition
 acquisition_image_repository: 378762170585.dkr.ecr.us-west-2.amazonaws.com/humanos-acquisition
-task_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-production-task-role
-execution_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-production-execution-role
+task_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-prod-task-role
+execution_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-prod-execution-role
 acquisition_cpu: 512
 acquisition_memory: 1024
 acquisition_container_cpu: 384
