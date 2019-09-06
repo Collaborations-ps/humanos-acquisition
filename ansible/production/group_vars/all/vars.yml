@@ -5,7 +5,7 @@ api_host: https://api.os.collaboration.ai
 web_url: https://os.collaboration.ai
 google_client_id: 841460680798-6fjhk5geea9cm6huajcdfokj795spa29.apps.googleusercontent.com
 aws_region: us-west-2
-cluster: humanos-production
+cluster: humanos-prod
 acquisition_image_name: humanos-acquisition
 acquisition_image_repository: 378762170585.dkr.ecr.us-west-2.amazonaws.com/humanos-acquisition
 task_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-production-task-role
