@@ -28,6 +28,8 @@ module.exports = {
     'react/jsx-handler-names': 2,
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.ts', '.tsx'] }],
     'react/jsx-sort-props': [2, { callbacksLast: true }],
+    'react/jsx-props-no-spreading': 0,
+    'react/state-in-constructor': 0,
     '@typescript-eslint/indent': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/explicit-function-return-type': 0,

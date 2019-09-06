@@ -1,5 +1,5 @@
 import React from 'react'
-import App, { Container, AppContext } from 'next/app'
+import App, { AppContext } from 'next/app'
 import Head from 'next/head'
 
 import { publicRuntimeConfig } from '../utils/config'
@@ -51,7 +51,7 @@ export default class AcquisitionApp extends App {
     const { authorized } = this.state
 
     return (
-      <Container>
+      <>
         <Head>
           <title>HumanOS GMail Acquisition</title>
           <link
@@ -76,7 +76,7 @@ export default class AcquisitionApp extends App {
             this.renderNotAuthorized()
           )}
         </div>
-      </Container>
+      </>
     )
   }
 }
