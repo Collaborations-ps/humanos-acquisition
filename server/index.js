@@ -1,4 +1,5 @@
 const Koa = require('koa')
+const compress = require('koa-compress')
 const Next = require('next')
 
 const router = require('./routes')
@@ -10,6 +11,8 @@ const handle = app.getRequestHandler()
 
 app.prepare().then(() => {
   const server = new Koa()
+
+  server.use(compress())
 
   router.get('*', async ctx => {
     await handle(ctx.req, ctx.res)

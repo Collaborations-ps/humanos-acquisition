@@ -20,6 +20,7 @@
     "emailjs-imap-client": "3.0.7",
     "js-cookie": "2.2.1",
     "koa": "2.8.1",
+    "koa-compress": "3.0.0",
     "koa-router": "7.4.0",
     "lodash": "4.17.15",
     "luxon": "1.17.2",
