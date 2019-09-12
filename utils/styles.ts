@@ -171,7 +171,7 @@ export const DescriptionText = styled(Text)(
 )
 
 export const Accent = styled.span`
-   color: #449aff;
+   color: #db3a7b;
 `
 
 export const Bolder = styled.span`

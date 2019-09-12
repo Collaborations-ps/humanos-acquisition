@@ -388,24 +388,33 @@ class App extends PureComponent<{}, State> {
                 - Turn it off anytime <br />- The Mail program on your phone
                 and computer uses the same technology
                 <br /> <br />
-                Contact us if you have questions:
-                <br />
-                <Link
-                  href="mailto:info@collaboration.ai"
-                >
-                  info@collaboration.ai
-                </Link>{' '}
-                +16517607717
-                <br />
-                Read our{' '}
-                <Link
+                </DescriptionText>
+                <Flex justifyContent="space-between" my={3}>
+                <DescriptionText>
+                  Contact us if you have questions:
+                  <br />
+                  <Link
                   color="#449aff"
-                  href="https://www.collaboration.ai/terms.html"
-                >
-                  Privacy Policy
-                </Link>{' '}
-                to hold us to our word.
-              </DescriptionText>
+                    href="mailto:info@collaboration.ai"
+                    sx={{textDecoration:'none'}}
+                  >
+                    info@collaboration.ai
+                  </Link>{' '}
+                  +16517607717
+                </DescriptionText>
+                <DescriptionText textAlign="right">
+                  Read our{' '}
+                  <Link
+                    color="#449aff"
+                    href="https://www.collaboration.ai/terms.html"
+                    sx={{textDecoration:'none'}}
+                  >
+                    Privacy Policy
+                  </Link>
+                  <br />
+                  to hold us to our word.
+                </DescriptionText>
+              </Flex>
             </Card>
             <GoogleLogin
               buttonText="Connect GMail"
