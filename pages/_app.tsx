@@ -3,13 +3,18 @@ import App, { AppContext } from 'next/app'
 import Head from 'next/head'
 import { Global } from '@emotion/core'
 
+import { Image, Link } from 'rebass'
+
 import { publicRuntimeConfig } from '../utils/config'
 
 import Api from '../utils/api'
 
-import './index.css'
-
-import { Logo, Main, globalStyles } from '../utils/styles'
+import { 
+  globalStyles,
+  Logo,
+  Main,
+  Block,
+} from '../utils/styles'
 
 export default class AcquisitionApp extends App {
   public state = {
@@ -38,14 +43,13 @@ export default class AcquisitionApp extends App {
 
   private renderNotAuthorized() {
     const { loaded } = this.state
-
     return loaded ? (
-      <div className="block not-authorized">
+      <Block>
         Not authorized. Please login at{' '}
-        <a href={publicRuntimeConfig.WEB_URL}>HumanOS</a>, then go back
-      </div>
+        <Link href={publicRuntimeConfig.WEB_URL}>HumanOS</Link>, then go back
+      </Block>
     ) : (
-      <div className="block">Loading...</div>
+      <Block>Loading...</Block>
     )
   }
 
@@ -71,7 +75,7 @@ export default class AcquisitionApp extends App {
         </Head>
         <Main>
           <Logo>
-            <img alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
+            <Image alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
             &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
           </Logo>
           {authorized ? (

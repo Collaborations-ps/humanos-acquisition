@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import {
-  GoogleLogin,
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login'
@@ -10,6 +9,20 @@ import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
 import { Box, Image, Flex, Card, Text, Link } from 'rebass'
+
+import { 
+  GoogleLogin,
+  Example,
+  Upload,
+  Loading,
+  Header,
+  Overlay,
+  Pre,
+  DescriptionText, 
+  Accent,
+  Bolder,
+  Bold,
+} from '../utils/styles'
 
 import { parseMessages } from '../utils'
 import localApi, { Mailbox } from '../utils/localApi'
@@ -62,9 +75,9 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
 
 function renderLoading(children: any) {
   return (
-    <div className="loading">
-      <img alt="loader" src="/static/loader.svg" /> {children}
-    </div>
+    <Loading>
+      <Image alt="loader" src="/static/loader.svg" mb={4} /> {children}
+    </Loading>
   )
 }
 
@@ -238,22 +251,22 @@ class App extends PureComponent<{}, State> {
         )
       case STEPS.messagesFetched:
         return (
-          <div className="upload">
-            <div className="text">
+          <Upload>
+            <Text width={1}>
               We have fetched from/to information for all messages in your inbox
               (total: {this.messages.length}, see data sample{' '}
-              <a href="#" onClick={this.handleToggleExample}>
+              <Link color="#ffffff" href="#" onClick={this.handleToggleExample}>
                 here
-              </a>
+              </Link>
               )
               <br />
               <br />
               Do you want to Continue and upload them to HumanOS?
-            </div>
-            <button type="button" onClick={this.handleGenerateAndUploadFile}>
+            </Text>
+            <Box type="button" mx={0} my={4} color="#ffffff" bg="#449aff" onClick={this.handleGenerateAndUploadFile}>
               Upload
-            </button>
-          </div>
+            </Box>
+          </Upload>
         )
       case STEPS.signingFile:
         return renderLoading(`Signing metadata file to upload...`)
@@ -263,11 +276,11 @@ class App extends PureComponent<{}, State> {
         return renderLoading(`Notify application about upload...`)
       case STEPS.done:
         return (
-          <div className="upload">
+          <Upload>
             All done! <br />
             We notify you when data will be processed. <br />
             Now you can close this window.
-          </div>
+          </Upload>
         )
       default:
         return null
@@ -279,23 +292,23 @@ class App extends PureComponent<{}, State> {
 
     return (
       <>
-        {error && <div>Error occured</div>}
+        {error && <Box>Error occured</Box>}
         {googleAuth ? (
           <>
             {exampleShown && (
-              <div className="example">
-                <button type="button" onClick={this.handleToggleExample}>
+              <Example>
+                <Box type="button" onClick={this.handleToggleExample}>
                   close
-                </button>
-                <pre>
+                </Box>
+                <Pre>
                   ...{'\n'}
                   {JSON.stringify(messagesExample, null, 2)}
                   {'\n'}...
-                </pre>
-              </div>
+                </Pre>
+              </Example>
             )}
-            <div className="overlay">{this.renderStatus()}</div>
-            <div className="header">
+            <Overlay>{this.renderStatus()}</Overlay>
+            <Header>
               <button
                 className="small"
                 type="button"
@@ -303,7 +316,7 @@ class App extends PureComponent<{}, State> {
               >
                 Logout
               </button>
-            </div>
+            </Header>
           </>
         ) : (
           <>
@@ -350,67 +363,52 @@ class App extends PureComponent<{}, State> {
                   From
                 </Text>
               </Flex>
-              <Text
-                color="#364152"
-                fontSize={['12px', 2]}
-                fontWeight="bold"
-                mb={2}
+              <DescriptionText
+                fontSize={['12px', '16px']} 
                 mt={[3, 4]}
               >
-                THIS INFORMATION IS CRITICAL
-                <br />
-                TO UNDERSTANDING YOUR NETWORK AND HELP YOU SUCCEED.
-              </Text>
-              <Text fontSize={['12px', 2]} mb={2}>
+                <Bold>
+                  THIS INFORMATION IS CRITICAL
+                  <br />
+                  TO UNDERSTANDING YOUR NETWORK AND HELP YOU SUCCEED.
+                </Bold>
+                <br /> <br />
                 We have published open source version of our code to prove
                 <br />
-                <Text
-                  color="#449aff"
-                  fontSize={['12px', 2]}
-                  sx={{ display: 'inline' }}
-                >
+                <Accent>
                   we will never touch the content of your email
-                </Text>{' '}
+                </Accent>{' '}
                 (that’s Google and Microsoft’s job)
-              </Text>
-              <Text fontSize={['12px', 2]} mb={3}>
+                <br /> <br />
                 We know it is worth it, we hope you will trust us to help you
                 improve your impact.
-              </Text>
-              <Flex flexDirection="column" mb={[3, 4]}>
-                <Text color="#364152" fontSize={['12px', 2]} fontWeight={500}>
-                  Yes, it’s a little scary, but
-                </Text>
-                <Text color="#364152" fontSize={['12px', 2]}>
-                  - You remain in control <br />
-                  - Turn it off anytime <br />- The Mail program on your phone
-                  and computer uses the same technology
-                </Text>
-              </Flex>
-              <Box sx={{ lineHeight: 'normal' }}>
-                <Text fontSize={['12px', 2]}>
-                  Contact us if you have questions:
-                  <br />
-                  <Link
-                    color="#364152"
-                    href="mailto:info@collaboration.ai"
-                    sx={{ textDecoration: 'none' }}
-                  >
-                    info@collaboration.ai
-                  </Link>{' '}
-                  +16517607717
-                  <br />
-                  Read our{' '}
-                  <Link
-                    color="#449aff"
-                    href="https://www.collaboration.ai/terms.html"
-                    sx={{ textDecoration: 'none' }}
-                  >
-                    Privacy Policy
-                  </Link>{' '}
-                  to hold us to our word.
-                </Text>
-              </Box>
+                <br /> <br />
+                <Bolder>Yes, it’s a little scary, but</Bolder> < br />
+                - You remain in control <br />
+                - Turn it off anytime <br />- The Mail program on your phone
+                and computer uses the same technology
+                <br /> <br />
+                Contact us if you have questions:
+                <br />
+                <Link
+                  color="#364152"
+                  href="mailto:info@collaboration.ai"
+                  sx={{ textDecoration: 'none' }}
+                >
+                  info@collaboration.ai
+                </Link>{' '}
+                +16517607717
+                <br />
+                Read our{' '}
+                <Link
+                  color="#449aff"
+                  href="https://www.collaboration.ai/terms.html"
+                  sx={{ textDecoration: 'none' }}
+                >
+                  Privacy Policy
+                </Link>{' '}
+                to hold us to our word.
+              </DescriptionText>
             </Card>
             <GoogleLogin
               buttonText="Connect GMail"

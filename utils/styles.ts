@@ -1,5 +1,8 @@
 import styled from '@emotion/styled'
 import { css } from '@emotion/core'
+import { GoogleLogin as GoogleLoginBase } from 'react-google-login'
+
+import { Box, Flex, Text } from 'rebass'
 
 export const globalStyles = css`
   body {
@@ -56,8 +59,7 @@ export const globalStyles = css`
   }
 `
 
-export const Main = styled.div`
-  display: flex;
+export const Main = styled(Flex)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -82,4 +84,97 @@ export const Logo = styled.div`
     margin-right: 4px;
     margin-top: -3px;
   }
+`
+
+export const Upload = styled(Flex)`
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+`
+
+export const Loading = styled(Flex)`
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+export const Example = styled(Box)`
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  color: white;
+  z-index: 1000;
+  max-height: 100vh;
+  font-size: 14px;
+
+  button {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+`
+
+export const GoogleLogin = styled(GoogleLoginBase)`
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #364152 !important;
+  padding: 0 24px !important;
+`
+
+export const Overlay = styled(Box)`
+  color: white;
+`
+
+export const Header = styled(Flex)`
+  flex-direction: row;
+  justify-content: flex-end;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+`
+
+export const Pre = styled.pre`
+  background: #f3f3f3;
+  padding: 4px;
+  border: 1px solid #a3a3a3;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  background: none;
+  overflow: scroll;
+  max-height: calc(100vh - 16px);
+  border: none;
+  padding: 32px;
+  margin: 0;
+`
+
+export const Block = styled(Box)`
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+`
+
+export const DescriptionText = styled(Text)(
+  {
+    color: "#364152",
+    
+  },
+)
+
+export const Accent = styled.span`
+   color: #449aff;
+`
+
+export const Bolder = styled.span`
+   font-weight: 500;
+`
+
+export const Bold = styled.span`
+  font-weight: bold;
 `
