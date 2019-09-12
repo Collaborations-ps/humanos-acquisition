@@ -263,7 +263,14 @@ class App extends PureComponent<{}, State> {
               <br />
               Do you want to Continue and upload them to HumanOS?
             </Text>
-            <Button type="button" mx={0} my={4} color="#ffffff" bg="#449aff" onClick={this.handleGenerateAndUploadFile}>
+            <Button
+              bg="#449aff"
+              color="#ffffff"
+              mx={0}
+              my={4}
+              type="button"
+              onClick={this.handleGenerateAndUploadFile}
+            >
               Upload
             </Button>
           </Upload>
@@ -297,7 +304,11 @@ class App extends PureComponent<{}, State> {
           <>
             {exampleShown && (
               <Example>
-                <Button type="button" onClick={this.handleToggleExample}>
+                <Button
+                  color="#db3a7b"
+                  type="button"
+                  onClick={this.handleToggleExample}
+                >
                   close
                 </Button>
                 <Pre>
@@ -385,15 +396,15 @@ class App extends PureComponent<{}, State> {
                 - Turn it off anytime <br />- The Mail program on your phone and
                 computer uses the same technology
                 <br /> <br />
-                </DescriptionText>
-                <Flex justifyContent="space-between" my={3}>
+              </DescriptionText>
+              <Flex justifyContent="space-between" my={3}>
                 <DescriptionText>
                   Contact us if you have questions:
                   <br />
                   <Link
-                  color="#449aff"
+                    color="#449aff"
                     href="mailto:info@collaboration.ai"
-                    sx={{textDecoration:'none'}}
+                    sx={{ textDecoration: 'none' }}
                   >
                     info@collaboration.ai
                   </Link>{' '}
@@ -404,7 +415,7 @@ class App extends PureComponent<{}, State> {
                   <Link
                     color="#449aff"
                     href="https://www.collaboration.ai/terms.html"
-                    sx={{textDecoration:'none'}}
+                    sx={{ textDecoration: 'none' }}
                   >
                     Privacy Policy
                   </Link>
