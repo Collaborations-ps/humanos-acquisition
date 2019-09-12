@@ -309,15 +309,16 @@ class App extends PureComponent<{}, State> {
           <>
             <Card 
               sx={{
-                borderRadius: '8px'
+                borderRadius: '8px',
+                maxWidth: '788px'
               }}
               bg="#ffffff"
               color="#364152"
               mb={3}
+              mt={[5,0]}
               p={'24px'}
-              width={'788px'}
             >
-              <Text color="#db3a7b" fontSize={[2,3,3,4]} fontWeight="bold" mb={'4px'}>
+              <Text color="#db3a7b" fontSize={[3,4]} fontWeight="bold" mb={'4px'}>
                 We only read:
               </Text>
               <Flex bg="#fafbfd" flexDirection='column' py={2} px={3} mb={'4px'} sx={{
@@ -325,43 +326,44 @@ class App extends PureComponent<{}, State> {
                 border: '1px solid #e3e3e6'
               }}>
                 <Flex justifyContent="space-between" mb={1}>
-                  <Text color='#364152' fontSize={1}>To</Text>
-                  <Text color='#364152' fontSize={1}>Cc Bcc</Text>
+                  <Text color='#364152' fontSize={['10px','12px']}>To</Text>
+                  <Text color='#364152' fontSize={['10px','12px']}>Cc Bcc</Text>
                 </Flex>
                 <Box bg='#e3e3e6' width={'100%'} height={'1px'}></Box>
-                <Text color='#364152' fontSize={1} mt={1}>From</Text>
+                <Text color='#364152' fontSize={['10px','12px']} mt={1}>From</Text>
               </Flex>
-              <Text color="#364152" fontWeight="bold" mb={2} mt={4}>
+              <Text color="#364152" fontSize={['12px',2]} fontWeight="bold" mb={2} mt={[3,4]}>
                 THIS INFORMATION IS CRITICAL
                 <br />
                 TO UNDERSTANDING YOUR NETWORK AND HELP YOU SUCCEED. 
               </Text>
-              <Text mb={2}>
+              <Text fontSize={['12px',2]} mb={2}>
                 We have published open source version of our code to prove
                 <br/>
                 <Text
                   color="#449aff"
+                  fontSize={['12px',2]} 
                   sx={{display:'inline'}}
                 >
                   we will never touch the content of your email
                 </Text>{' '}
                 (that’s Google and Microsoft’s job)
               </Text>
-              <Text mb={3}>
+              <Text fontSize={['12px',2]} mb={3}>
                 We know it is worth it, we hope you will trust us to help you improve your impact.
               </Text>
-              <Flex flexDirection="column" mb={4}>
-                <Text color="#364152" fontSize={2} fontWeight={500}>
+              <Flex flexDirection="column" mb={[3,4]}>
+                <Text color="#364152" fontSize={['12px',2]}  fontWeight={500}>
                   Yes, it’s a little scary, but
                 </Text>
-                <Text color="#364152" fontSize={2}>
+                <Text color="#364152" fontSize={['12px',2]}>
                   - You remain in control <br />
                   - Turn it off anytime <br />
                   - The Mail program on your phone and computer uses the same technology
                 </Text>
               </Flex>
-              <Box width={1 / 2} sx={{lineHeight:'normal'}}>
-                <Text>Contact us if you have questions:
+              <Box sx={{lineHeight:'normal'}}>
+                <Text fontSize={['12px',2]} >Contact us if you have questions:
                   <br />
                   <Link sx={{textDecoration:'none'}} color="#364152" href="mailto:info@collaboration.ai">info@collaboration.ai</Link> +16517607717
                   <br />
@@ -376,7 +378,6 @@ class App extends PureComponent<{}, State> {
                   to hold us to our word.
                 </Text>
               </Box>
-              
             </Card>
             <GoogleLogin
               className="googleLogin"
@@ -384,9 +385,8 @@ class App extends PureComponent<{}, State> {
               clientId="219313047580-d21scatk83efg15guk8qke0job6agvcb.apps.googleusercontent.com"
               cookiePolicy="single_host_origin"
               scope="https://mail.google.com/"
-              style={{width:'24px',height:'24px'}}
               onFailure={this.handleFailureLogin}
-                onSuccess={this.handleSuccessLogin}
+              onSuccess={this.handleSuccessLogin}
             />
           </>
         )}
