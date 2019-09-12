@@ -9,7 +9,7 @@ import Api from '../utils/api'
 
 import './index.css'
 
-import { Logo, Main, globalStyles } from './styles'
+import { Logo, Main, globalStyles } from '../utils/styles'
 
 export default class AcquisitionApp extends App {
   public state = {
