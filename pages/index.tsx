@@ -10,7 +10,7 @@ import sampleSize from 'lodash/sampleSize'
 
 import { Box, Image, Flex, Card, Text, Link, Button } from 'rebass'
 
-import { 
+import {
   GoogleLogin,
   Example,
   Upload,
@@ -18,7 +18,7 @@ import {
   Header,
   Overlay,
   Pre,
-  DescriptionText, 
+  DescriptionText,
   Accent,
   Bolder,
   Bold,
@@ -76,7 +76,7 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
 function renderLoading(children: any) {
   return (
     <Loading>
-      <Image alt="loader" src="/static/loader.svg" mb={4} /> {children}
+      <Image alt="loader" mb={4} src="/static/loader.svg" /> {children}
     </Loading>
   )
 }
@@ -363,10 +363,7 @@ class App extends PureComponent<{}, State> {
                   From
                 </Text>
               </Flex>
-              <DescriptionText
-                fontSize={['12px', '16px']} 
-                mt={[3, 4]}
-              >
+              <DescriptionText fontSize={['12px', '16px']} mt={[3, 4]}>
                 <Bold>
                   THIS INFORMATION IS CRITICAL
                   <br />
@@ -383,10 +380,10 @@ class App extends PureComponent<{}, State> {
                 We know it is worth it, we hope you will trust us to help you
                 improve your impact.
                 <br /> <br />
-                <Bolder>Yes, it’s a little scary, but</Bolder> < br />
+                <Bolder>Yes, it’s a little scary, but</Bolder> <br />
                 - You remain in control <br />
-                - Turn it off anytime <br />- The Mail program on your phone
-                and computer uses the same technology
+                - Turn it off anytime <br />- The Mail program on your phone and
+                computer uses the same technology
                 <br /> <br />
                 </DescriptionText>
                 <Flex justifyContent="space-between" my={3}>
@@ -417,7 +414,6 @@ class App extends PureComponent<{}, State> {
               </Flex>
             </Card>
             <GoogleLogin
-              buttonText="Connect GMail"
               className="googleLogin"
               clientId={publicRuntimeConfig.GOOGLE_CLIENT_ID}
               cookiePolicy="single_host_origin"

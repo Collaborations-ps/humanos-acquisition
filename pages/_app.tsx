@@ -9,12 +9,7 @@ import { publicRuntimeConfig } from '../utils/config'
 
 import Api from '../utils/api'
 
-import { 
-  globalStyles,
-  Logo,
-  Main,
-  Block,
-} from '../utils/styles'
+import { globalStyles, Logo, Main, Block } from '../utils/styles'
 
 export default class AcquisitionApp extends App {
   public state = {

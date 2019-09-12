@@ -129,7 +129,6 @@ export const Example = styled(Box)`
     font-size: 14px;
     padding: 4px 8px;
   }
-
 `
 
 export const GoogleLogin = styled(GoogleLoginBase)`
@@ -163,19 +162,16 @@ export const Block = styled(Box)`
   padding: 16px;
 `
 
-export const DescriptionText = styled(Text)(
-  {
-    color: "#364152",
-    
-  },
-)
+export const DescriptionText = styled(Text)({
+  color: '#364152',
+})
 
 export const Accent = styled.span`
    color: #db3a7b;
 `
 
 export const Bolder = styled.span`
-   font-weight: 500;
+  font-weight: 500;
 `
 
 export const Bold = styled.span`
