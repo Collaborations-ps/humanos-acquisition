@@ -1,4 +1,5 @@
 const Koa = require('koa')
+const compress = require('koa-compress')
 const Next = require('next')
 
 const router = require('./routes')
@@ -11,6 +12,8 @@ const handle = app.getRequestHandler()
 app.prepare().then(() => {
   const server = new Koa()
 
+  server.use(compress())
+
   router.get('*', async ctx => {
     await handle(ctx.req, ctx.res)
     ctx.respond = false
@@ -22,7 +25,9 @@ app.prepare().then(() => {
   })
 
   server.use(router.routes())
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`)
-  }).setTimeout(10 * 60 * 1000)
+  server
+    .listen(port, () => {
+      console.log(`> Ready on http://localhost:${port}`)
+    })
+    .setTimeout(30 * 60 * 1000)
 })

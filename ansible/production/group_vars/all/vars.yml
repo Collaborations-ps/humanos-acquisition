@@ -1,0 +1,19 @@
+env: prod
+node_env: produciton
+port: 80
+api_host: https://api.os.collaboration.ai
+web_url: https://os.collaboration.ai
+google_client_id: 841460680798-6fjhk5geea9cm6huajcdfokj795spa29.apps.googleusercontent.com
+aws_region: us-west-2
+cluster: humanos-prod
+acquisition_image_name: humanos-acquisition
+acquisition_image_repository: 378762170585.dkr.ecr.us-west-2.amazonaws.com/humanos-acquisition
+task_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-prod-task-role
+execution_role_arn: arn:aws:iam::378762170585:role/ecs/humanos-prod-execution-role
+acquisition_cpu: 512
+acquisition_memory: 1024
+acquisition_container_cpu: 384
+acquisition_container_memory: 768
+acquisition_desired_count: 1
+subnets: ['subnet-02d601d1818204d93', 'subnet-09a2d96045f6b41b0']
+security_groups: ['sg-0dee59ac207418ed9']

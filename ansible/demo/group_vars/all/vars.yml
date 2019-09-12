@@ -3,6 +3,7 @@ node_env: produciton
 port: 80
 api_host: https://api.demo.humanos.c8.ai
 web_url: https://demo.humanos.c8.ai
+google_client_id: 219313047580-d21scatk83efg15guk8qke0job6agvcb.apps.googleusercontent.com
 aws_region: us-west-2
 cluster: humanos-demo
 acquisition_image_name: humanos-acquisition
@@ -14,5 +15,5 @@ acquisition_memory: 1024
 acquisition_container_cpu: 384
 acquisition_container_memory: 768
 acquisition_desired_count: 1
-subnets: ["subnet-0bf773a09d542e9db", "subnet-02b2b3f9da61fcfd5"]
-security_groups: ["sg-018f235f5d9a92550"]
+subnets: ['subnet-0bf773a09d542e9db', 'subnet-02b2b3f9da61fcfd5']
+security_groups: ['sg-018f235f5d9a92550']
