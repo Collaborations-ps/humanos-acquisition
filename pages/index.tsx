@@ -9,7 +9,7 @@ import axios from 'axios'
 import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
-import { Box, Flex, Card, Text, Link } from 'rebass'
+import { Box, Image, Flex, Card, Text, Link } from 'rebass'
 
 import { parseMessages } from '../utils'
 import localApi, { Mailbox } from '../utils/localApi'
@@ -317,11 +317,15 @@ class App extends PureComponent<{}, State> {
               mb={3}
               mt={[5,0]}
               p={'24px'}
+              width={['auto', 'auto','788px']}
             >
-              <Text color="#db3a7b" fontSize={[3,4]} fontWeight="bold" mb={'4px'}>
+              <Text color="#db3a7b" fontSize={[3,4]} fontWeight="bold" mb={2}>
                 We only read:
               </Text>
-              <Flex bg="#fafbfd" flexDirection='column' py={2} px={3} mb={'4px'} sx={{
+              <Flex alignSelf="center" justifyContent="center">
+                <Image width={['240px','auto']} src="/static/data.png" />
+              </Flex>
+              <Flex bg="#fafbfd" flexDirection='column' py={2} px={3} mb={1} mt={3}sx={{
                 borderRadius: '8px',
                 border: '1px solid #e3e3e6'
               }}>
