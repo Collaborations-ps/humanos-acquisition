@@ -178,3 +178,11 @@ pre {
   font-size: 14px;
   padding: 4px 8px;
 }
+
+.googleLogin {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #364152 !important;
+  padding: 4px 24px !important;
+  
+}
