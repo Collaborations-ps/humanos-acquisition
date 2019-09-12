@@ -391,9 +391,7 @@ class App extends PureComponent<{}, State> {
                 Contact us if you have questions:
                 <br />
                 <Link
-                  color="#364152"
                   href="mailto:info@collaboration.ai"
-                  sx={{ textDecoration: 'none' }}
                 >
                   info@collaboration.ai
                 </Link>{' '}
@@ -403,7 +401,6 @@ class App extends PureComponent<{}, State> {
                 <Link
                   color="#449aff"
                   href="https://www.collaboration.ai/terms.html"
-                  sx={{ textDecoration: 'none' }}
                 >
                   Privacy Policy
                 </Link>{' '}
