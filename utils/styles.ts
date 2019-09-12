@@ -112,6 +112,16 @@ export const Example = styled(Box)`
   max-height: 100vh;
   font-size: 14px;
 
+  pre {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    background: none !important;
+    overflow: scroll !important;
+    max-height: calc(100vh - 16px) !important;
+    border: none !important;
+    padding: 32px !important;
+    margin: 0 !important;
+  }
+
   button {
     position: absolute;
     right: 16px;
@@ -145,13 +155,6 @@ export const Pre = styled.pre`
   background: #f3f3f3;
   padding: 4px;
   border: 1px solid #a3a3a3;
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-  background: none;
-  overflow: scroll;
-  max-height: calc(100vh - 16px);
-  border: none;
-  padding: 32px;
-  margin: 0;
 `
 
 export const Block = styled(Box)`

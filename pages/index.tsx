@@ -8,7 +8,7 @@ import axios from 'axios'
 import get from 'lodash/get'
 import sampleSize from 'lodash/sampleSize'
 
-import { Box, Image, Flex, Card, Text, Link } from 'rebass'
+import { Box, Image, Flex, Card, Text, Link, Button } from 'rebass'
 
 import { 
   GoogleLogin,
@@ -263,9 +263,9 @@ class App extends PureComponent<{}, State> {
               <br />
               Do you want to Continue and upload them to HumanOS?
             </Text>
-            <Box type="button" mx={0} my={4} color="#ffffff" bg="#449aff" onClick={this.handleGenerateAndUploadFile}>
+            <Button type="button" mx={0} my={4} color="#ffffff" bg="#449aff" onClick={this.handleGenerateAndUploadFile}>
               Upload
-            </Box>
+            </Button>
           </Upload>
         )
       case STEPS.signingFile:
@@ -297,9 +297,9 @@ class App extends PureComponent<{}, State> {
           <>
             {exampleShown && (
               <Example>
-                <Box type="button" onClick={this.handleToggleExample}>
+                <Button type="button" onClick={this.handleToggleExample}>
                   close
-                </Box>
+                </Button>
                 <Pre>
                   ...{'\n'}
                   {JSON.stringify(messagesExample, null, 2)}
