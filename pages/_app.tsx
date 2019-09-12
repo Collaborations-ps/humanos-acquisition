@@ -1,12 +1,15 @@
 import React from 'react'
 import App, { AppContext } from 'next/app'
 import Head from 'next/head'
+import { Global } from '@emotion/core'
 
 import { publicRuntimeConfig } from '../utils/config'
 
 import Api from '../utils/api'
 
 import './index.css'
+
+import { Logo, Main, globalStyles } from './styles'
 
 export default class AcquisitionApp extends App {
   public state = {
@@ -52,6 +55,7 @@ export default class AcquisitionApp extends App {
 
     return (
       <>
+        <Global styles={globalStyles} />
         <Head>
           <title>HumanOS GMail Acquisition</title>
           <link
@@ -65,17 +69,17 @@ export default class AcquisitionApp extends App {
             rel="stylesheet"
           />
         </Head>
-        <div className="main">
-          <div className="logo">
+        <Main>
+          <Logo>
             <img alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
             &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
-          </div>
+          </Logo>
           {authorized ? (
             <Component {...pageProps} />
           ) : (
             this.renderNotAuthorized()
           )}
-        </div>
+        </Main>
       </>
     )
   }
