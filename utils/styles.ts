@@ -119,7 +119,6 @@ export const Example = styled(Box)`
     font-size: 14px;
     padding: 4px 8px;
   }
-
 `
 
 export const GoogleLogin = styled(GoogleLoginBase)`
@@ -145,7 +144,8 @@ export const Pre = styled.pre`
   background: #f3f3f3;
   padding: 4px;
   border: 1px solid #a3a3a3;
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
   background: none;
   overflow: scroll;
   max-height: calc(100vh - 16px);
@@ -160,19 +160,16 @@ export const Block = styled(Box)`
   padding: 16px;
 `
 
-export const DescriptionText = styled(Text)(
-  {
-    color: "#364152",
-    
-  },
-)
+export const DescriptionText = styled(Text)({
+  color: '#364152',
+})
 
 export const Accent = styled.span`
-   color: #449aff;
+  color: #449aff;
 `
 
 export const Bolder = styled.span`
-   font-weight: 500;
+  font-weight: 500;
 `
 
 export const Bold = styled.span`
