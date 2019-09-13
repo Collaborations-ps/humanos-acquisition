@@ -36,30 +36,10 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.6
+      - image: startupcraftio/circleci-aws-deployment:1.0
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Set default profile
-          command: |
-            mkdir -p ~/.aws
-            touch ~/.aws/config
-            echo '[default]' >> ~/.aws/config
-      - run:
-          name: Install pip3 libs
-          command: |
-            sudo pip3 install -U \
-              awscli==1.16.* \
-              ansible==2.8.*
-      - run:
-          name: Install apt-get libs
-          command: |
-            sudo apt-get install -y \
-              python3-requests=2.21.* \
-              python3-docker=3.4.* \
-              gnupg2=2.2.* \
-              pass=1.7.*
       - run:
           name: Deploy to AWS
           command: |
