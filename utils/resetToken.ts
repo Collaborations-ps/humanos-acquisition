@@ -3,7 +3,7 @@ import axios from 'axios'
 import get from 'lodash/get'
 
 import { publicRuntimeConfig } from './config'
-import { getAuthHeaders, getRefreshToken, setAccessToken } from './auth'
+import { getAuthHeaders, getRefreshToken /* , setAccessToken */ } from './auth'
 
 let isAlreadyFetchingAccessToken = false
 
@@ -56,7 +56,7 @@ export async function resetTokenAndReattemptRequest(error: any) {
 
       const newToken = get(response, 'data.refreshed.accessToken')
 
-      setAccessToken(newToken)
+      // setAccessToken(newToken)
 
       isAlreadyFetchingAccessToken = false
 
