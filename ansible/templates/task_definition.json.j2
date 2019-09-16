@@ -1,0 +1,56 @@
+{
+  "family": "acquisition",
+  "volumes": [],
+  "networkMode": "awsvpc",
+  "placementConstraints": [],
+  "taskRoleArn": "{{ task_role_arn }}",
+  "executionRoleArn": "{{ execution_role_arn }}",
+  "requiresCompatibilities": ["FARGATE"],
+  "memory": "{{ acquisition_memory }}",
+  "cpu": "{{ acquisition_cpu }}",
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "{{ acquisition_image_repository }}:{{ image_tag }}",
+      "memory": {{ acquisition_container_memory }},
+      "cpu": {{ acquisition_container_cpu }},
+      "portMappings": [
+        {
+          "containerPort": {{ port }},
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "humanos-{{ env }}/ecs/acquisition.log",
+            "awslogs-region": "{{ aws_region }}",
+            "awslogs-stream-prefix": "acquisition"
+        }
+      },
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "{{ node_env }}"
+        },
+        {
+          "name": "API_HOST",
+          "value": "{{ api_host }}"
+        },
+        {
+          "name": "PORT",
+          "value": "{{ port }}"
+        },
+        {
+          "name": "WEB_URL",
+          "value": "{{ web_url }}"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "value": "{{ google_client_id }}"
+        }
+      ]
+    }
+  ]
+}

@@ -22,11 +22,14 @@ module.exports = {
     'prettier/prettier': [1, prettierOptions],
     'no-console': isProduction ? 2 : 1,
     'no-debugger': isProduction ? 2 : 1,
+    'jsx-a11y/anchor-is-valid': 0,
     'react/jsx-no-bind': 2,
     'react/jsx-boolean-value': 2,
     'react/jsx-handler-names': 2,
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.ts', '.tsx'] }],
     'react/jsx-sort-props': [2, { callbacksLast: true }],
+    'react/jsx-props-no-spreading': 0,
+    'react/state-in-constructor': 0,
     '@typescript-eslint/indent': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
@@ -43,7 +46,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        moduleDirectory: ['node_modules', 'server', 'pages'],
+        moduleDirectory: ['node_modules', 'server', 'pages', 'assets'],
         extensions: ['.js', '.ts', '.tsx'],
       },
     },

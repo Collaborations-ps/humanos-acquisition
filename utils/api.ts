@@ -1,29 +1,54 @@
 import axios from 'axios'
-import Cookies from 'js-cookie'
 
 import get from 'lodash/get'
 
 import { publicRuntimeConfig } from './config'
+import { resetTokenAndReattemptRequest } from './resetToken'
+import { getAuthHeaders, getRefreshToken } from './auth'
 
-function getAuthHeaders() {
-  const jwt = JSON.parse(Cookies.get('humanos-jwt') || 'null')
+const axiosWithRefresh = axios.create()
 
-  const headers: { Authorization?: string } = {
-    Authorization: undefined,
-  }
-
-  if (jwt) {
-    headers.Authorization = `Bearer ${get(jwt, 'accessToken')}`
-  }
-
-  return headers
+function isTokenExpiredError(errorResponse: any): boolean {
+  return errorResponse.status === 401 && getRefreshToken()
 }
 
+axiosWithRefresh.interceptors.response.use(
+  function onFulfilled(response) {
+    return response
+  },
+  function onRejected(error) {
+    const errorResponse = error.response
+    if (isTokenExpiredError(errorResponse)) {
+      return resetTokenAndReattemptRequest(error)
+    }
+
+    return Promise.reject(error)
+  },
+)
+
 async function checkAuthorized(): Promise<boolean> {
-  const response = await axios.get(
-    `${publicRuntimeConfig.API_HOST}/private/checkAuth`,
+  try {
+    const response = await axiosWithRefresh.get(
+      `${publicRuntimeConfig.API_HOST}/private/checkAuth`,
+      {
+        headers: getAuthHeaders(),
+      },
+    )
+
+    const data = get(response, 'data', { ok: false })
+
+    return data.ok
+  } catch (e) {
+    return false
+  }
+}
+
+async function sendNotification(email: string): Promise<boolean> {
+  const response = await axiosWithRefresh.get(
+    `${publicRuntimeConfig.API_HOST}/private/gmailPackageUploaded`,
     {
       headers: getAuthHeaders(),
+      params: { email },
     },
   )
 
@@ -32,7 +57,7 @@ async function checkAuthorized(): Promise<boolean> {
   return data.ok
 }
 
-async function signGMailData({
+async function signGmailPackage({
   name,
   contentType,
   size,
@@ -41,8 +66,8 @@ async function signGMailData({
   contentType: string
   size: number
 }): Promise<string | boolean> {
-  const response = await axios.get(
-    `${publicRuntimeConfig.API_HOST}/private/signGMailData`,
+  const response = await axiosWithRefresh.get(
+    `${publicRuntimeConfig.API_HOST}/private/signGmailPackage`,
     {
       headers: getAuthHeaders(),
       params: { name, contentType, size },
@@ -60,5 +85,6 @@ async function signGMailData({
 
 export default {
   checkAuthorized,
-  signGMailData,
+  signGmailPackage,
+  sendNotification,
 }

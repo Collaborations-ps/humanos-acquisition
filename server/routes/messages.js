@@ -12,7 +12,9 @@ async function getMessages(ctx) {
     const messages = await client.listMessages(
       get(ctx, 'query.mailbox', 'INBOX'),
       get(ctx, 'query.limit', '1:10'),
-      ['(UID X-GM-THRID BODY.PEEK[HEADER.FIELDS (FROM TO CC Date)])'],
+      [
+        '(UID X-GM-THRID X-GM-MSGID BODY.PEEK[HEADER.FIELDS (FROM TO CC Date)])',
+      ],
     )
 
     client.close()

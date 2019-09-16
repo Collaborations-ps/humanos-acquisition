@@ -1,4 +1,5 @@
 const Koa = require('koa')
+const compress = require('koa-compress')
 const Next = require('next')
 const { createServer } = require('http')
 const IO = require('socket.io')
@@ -18,6 +19,8 @@ app.prepare().then(() => {
   const server = createServer(koa.callback())
   const io = IO(server)
 
+  server.use(compress())
+
   router.get('*', async ctx => {
     await handle(ctx.req, ctx.res)
     ctx.respond = false
@@ -27,7 +30,6 @@ app.prepare().then(() => {
     ctx.res.statusCode = 200
     await next()
   })
-
 
   io.on('connection', async function connection(socket) {
     console.log('user connected')
@@ -47,7 +49,6 @@ app.prepare().then(() => {
       socket.disconnect()
     }
 
-
     socket.on('mailboxes', console.log)
 
     socket.on('disconnect', function disconnect() {
@@ -61,7 +62,9 @@ app.prepare().then(() => {
 
   koa.use(router.routes())
 
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`)
-  })
+  server
+    .listen(port, () => {
+      console.log(`> Ready on http://localhost:${port}`)
+    })
+    .setTimeout(30 * 60 * 1000)
 })

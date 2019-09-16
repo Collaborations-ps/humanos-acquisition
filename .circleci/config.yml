@@ -21,6 +21,7 @@ jobs:
           root: .
           paths:
             - node_modules
+
   build:
     <<: *defaults
     steps:
@@ -31,24 +32,40 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - build
+            - .next
 
-  test:
-    <<: *defaults
+  deploy:
+    docker:
+      - image: startupcraftio/circleci-aws-deployment:1.0
     steps:
       - checkout
-      - attach_workspace:
-          at: .
-      - run: yarn lint:fix # TODO: temporary linter
+      - setup_remote_docker
+      - run:
+          name: Deploy to AWS
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              AWS_DEFAULT_REGION=us-west-2 ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook ansible/release-deploy.yml -i ansible/staging --extra-vars "branch=master aws_profile=default" -v
+            elif [ "${CIRCLE_BRANCH}" == "demo" ]; then
+              AWS_DEFAULT_REGION=us-west-2 ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook ansible/release-deploy.yml -i ansible/demo --extra-vars "branch=demo aws_profile=default" -v
+            elif [ "${CIRCLE_BRANCH}" == "production" ]; then
+              AWS_DEFAULT_REGION=us-west-2 ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook ansible/release-deploy.yml -i ansible/production --extra-vars "branch=production aws_profile=default" -v
+            fi
 
 workflows:
   version: 2
   build_accept_deploy:
     jobs:
       - prepare
-      - test:
-          requires:
-            - prepare
       - build:
           requires:
-            - test
+            - prepare
+      - deploy:
+          requires:
+            - prepare
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - demo
+                - production

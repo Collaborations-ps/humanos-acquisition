@@ -1,10 +1,15 @@
 import React from 'react'
-import App, { Container, AppContext } from 'next/app'
+import App, { AppContext } from 'next/app'
 import Head from 'next/head'
+import { Global } from '@emotion/core'
+
+import { Image, Link } from 'rebass'
+
+import { publicRuntimeConfig } from '../utils/config'
 
 import Api from '../utils/api'
 
-import './index.css'
+import { globalStyles, Logo, Main, Block } from '../utils/styles'
 
 export default class AcquisitionApp extends App {
   public state = {
@@ -33,14 +38,13 @@ export default class AcquisitionApp extends App {
 
   private renderNotAuthorized() {
     const { loaded } = this.state
-
     return loaded ? (
-      <div className="block not-authorized">
+      <Block>
         Not authorized. Please login at{' '}
-        <a href="https://humanos.c8.ai">HumanOS</a>, then return here
-      </div>
+        <Link href={publicRuntimeConfig.WEB_URL}>HumanOS</Link>, then go back
+      </Block>
     ) : (
-      <div className="block">Loading...</div>
+      <Block>Loading...</Block>
     )
   }
 
@@ -49,18 +53,33 @@ export default class AcquisitionApp extends App {
     const { authorized } = this.state
 
     return (
-      <Container>
+      <>
+        <Global styles={globalStyles} />
         <Head>
           <title>HumanOS GMail Acquisition</title>
+          <link
+            href="/static/favicon.ico"
+            rel="shortcut icon"
+            type="image/x-icon"
+          />
+          <link
+            data-react-helmet="true"
+            href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700"
+            rel="stylesheet"
+          />
         </Head>
-        <div className="main">
+        <Main>
+          <Logo>
+            <Image alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
+            &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
+          </Logo>
           {authorized ? (
             <Component {...pageProps} />
           ) : (
             this.renderNotAuthorized()
           )}
-        </div>
-      </Container>
+        </Main>
+      </>
     )
   }
 }

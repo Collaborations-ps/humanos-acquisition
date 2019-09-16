@@ -1,0 +1,30 @@
+- name: Fetch branch
+  git:
+    repo: git@github.com:Collaborations-ps/humanos-acquisition.git
+    dest: checkout
+    version: "{{ branch }}"
+
+- name: get last commit sha
+  shell: git rev-parse --short HEAD
+  register: last_commit
+  args:
+    chdir: checkout/
+
+- set_fact:
+    image_tag: "{{ env }}-{{ last_commit.stdout }}"
+
+- name: ECR authentication
+  shell: eval $(aws ecr get-login --no-include-email)
+
+- name: Build and push container
+  docker_image:
+    path: checkout
+    name: "{{ acquisition_image_name }}"
+    repository: "{{ acquisition_image_repository }}"
+    tag: "{{ image_tag }}"
+    push: yes
+    force: yes
+
+- name: Print tag
+  debug:
+    msg: "Docker tag: {{ image_tag }}"

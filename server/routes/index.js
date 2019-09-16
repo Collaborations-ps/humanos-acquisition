@@ -9,4 +9,8 @@ router.get('/mailboxes', getMailBoxes)
 router.get('/mailbox', getMailBox)
 router.get('/messages', getMessages)
 
+router.get('/health', ctx => {
+  ctx.body = { ok: true }
+})
+
 module.exports = router
