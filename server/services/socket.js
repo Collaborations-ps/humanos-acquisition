@@ -54,4 +54,4 @@ function createSocket(io) {
   })
 }
 
-module.exports = initIO
+module.exports = createSocket
