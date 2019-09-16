@@ -201,6 +201,10 @@ class App extends PureComponent<{}, State> {
     }
   }
 
+  private handleGoToApp = () => {
+    window.open(publicRuntimeConfig.WEB_URL, '_self')
+  }
+
   private handleToggleExample = () => {
     this.setState(state => ({ exampleShown: !state.exampleShown }))
   }
@@ -284,9 +288,22 @@ class App extends PureComponent<{}, State> {
       case STEPS.done:
         return (
           <Upload>
-            All done! <br />
-            We notify you when data will be processed. <br />
-            Now you can close this window.
+            <Text width={1}>
+              Your data has been uploaded. <br /> 
+              It will take some time to process it. <br />
+              We will notify via email once it is done. <br />
+              You can use the App in the meantime.
+            </Text>
+            <Button
+              bg="#449aff"
+              color="#ffffff"
+              mx={0}
+              my={4}
+              type="button"
+              onClick={this.handleGoToApp}
+            >
+              GO TO APP
+            </Button>
           </Upload>
         )
       default:
