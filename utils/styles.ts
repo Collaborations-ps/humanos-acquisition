@@ -113,7 +113,8 @@ export const Example = styled(Box)`
   font-size: 14px;
 
   pre {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
     background: none !important;
     overflow: scroll !important;
     max-height: calc(100vh - 16px) !important;
@@ -167,7 +168,7 @@ export const DescriptionText = styled(Text)({
 })
 
 export const Accent = styled.span`
-   color: #db3a7b;
+  color: #db3a7b;
 `
 
 export const Bolder = styled.span`

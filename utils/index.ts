@@ -1,5 +1,8 @@
 import addressparser from 'addressparser'
 
+import get from 'lodash/get'
+import find from 'lodash/find'
+
 export function parseMessages(messages: [any]) {
   const parsedMessages = messages.reduce((acc, message) => {
     const params = message['body[header.fields (from to cc date)]'].split(
@@ -38,4 +41,31 @@ export function parseMessages(messages: [any]) {
   return parsedMessages
 }
 
-export default {}
+export function getAllMailboxPath(mailboxes: any) {
+  if (mailboxes) {
+    const gmail = find(
+      get(mailboxes, 'children', []),
+      mailbox => mailbox.name === '[Gmail]',
+    )
+
+    const allMailbox = find(
+      get(gmail, 'children', []),
+      mailbox => mailbox.specialUse === '\\All',
+    )
+
+    if (allMailbox) {
+      return allMailbox.path
+    }
+
+    return null
+  }
+
+  return null
+}
+
+export function parseMailboxData(mailboxPath: string, mailboxData: any) {
+  return {
+    count: get(mailboxData, 'exists') as number,
+    path: mailboxPath,
+  }
+}
