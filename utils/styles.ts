@@ -136,6 +136,7 @@ export const GoogleLogin = styled(GoogleLoginBase)`
   font-weight: 500 !important;
   color: #364152 !important;
   padding: 0 24px !important;
+  margin: 0 8px !important;
 `
 
 export const Overlay = styled(Box)`

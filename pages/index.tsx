@@ -352,7 +352,7 @@ class App extends PureComponent<{}, State> {
               bg="#ffffff"
               color="#364152"
               mb={3}
-              mt={[5, 0]}
+              mt={5}
               p="24px"
               sx={{
                 borderRadius: '8px',
@@ -441,14 +441,26 @@ class App extends PureComponent<{}, State> {
                 </DescriptionText>
               </Flex>
             </Card>
-            <GoogleLogin
-              className="googleLogin"
-              clientId={publicRuntimeConfig.GOOGLE_CLIENT_ID}
-              cookiePolicy="single_host_origin"
-              scope="https://mail.google.com/"
-              onFailure={this.handleFailureLogin}
-              onSuccess={this.handleSuccessLogin}
-            />
+            <Flex mt={2}>
+              <Button
+                bg="#449aff"
+                color="#ffffff"
+                mx={2}
+                my={0}
+                type="button"
+                onClick={this.handleGoToApp}
+              >
+                Go to Dashboard
+              </Button>
+              <GoogleLogin
+                className="googleLogin"
+                clientId={publicRuntimeConfig.GOOGLE_CLIENT_ID}
+                cookiePolicy="single_host_origin"
+                scope="https://mail.google.com/"
+                onFailure={this.handleFailureLogin}
+                onSuccess={this.handleSuccessLogin}
+              />
+            </Flex>
           </>
         )}
       </>
