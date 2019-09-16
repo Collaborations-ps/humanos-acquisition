@@ -4,34 +4,34 @@ import {
   GoogleLoginResponseOffline,
 } from 'react-google-login'
 import axios from 'axios'
+import openSocket from 'socket.io-client'
+import qs from 'qs'
 
 import get from 'lodash/get'
-import sampleSize from 'lodash/sampleSize'
 
 import { Box, Image, Flex, Card, Text, Link, Button } from 'rebass'
 
 import {
   GoogleLogin,
-  Example,
   Upload,
   Loading,
   Header,
   Overlay,
-  Pre,
   DescriptionText,
   Accent,
   Bolder,
   Bold,
 } from '../utils/styles'
 
-import { parseMessages } from '../utils'
-import localApi, { Mailbox } from '../utils/localApi'
+import { getAllMailboxPath, parseMailboxData, parseMessages } from '../utils'
 import { publicRuntimeConfig } from '../utils/config'
 import api from '../utils/api'
 
 enum STEPS {
   initial,
-  findingMailbox,
+  connectingImap,
+  getMailboxes,
+  findingAllMailbox,
   fetchMessages,
   messagesFetched,
   signingFile,
@@ -40,8 +40,10 @@ enum STEPS {
   done,
 }
 
-const BLOCKED_STEPS = [
-  STEPS.findingMailbox,
+const LOCKED_STEPS = [
+  STEPS.connectingImap,
+  STEPS.getMailboxes,
+  STEPS.findingAllMailbox,
   STEPS.fetchMessages,
   STEPS.messagesFetched,
   STEPS.signingFile,
@@ -58,10 +60,8 @@ interface Auth {
 interface State {
   googleAuth?: Auth | null
   error: boolean
-  mailbox: Mailbox | null
-  messagesExample: any
-  exampleShown: boolean
   step: STEPS
+  fetchedMessagesCount: number
 }
 
 function parseLoginResponse(response: GoogleLoginResponse): Auth {
@@ -81,40 +81,47 @@ function renderLoading(children: any) {
   )
 }
 
+function isAuthExpired(authData: Auth) {
+  return authData.expiresAt < +new Date()
+}
+
+const LIMIT = 100
+
 class App extends PureComponent<{}, State> {
   public state = {
     googleAuth: null,
     error: false,
-    mailbox: null,
-    messagesExample: [],
-    exampleShown: false,
     step: STEPS.initial,
+    fetchedMessagesCount: 0,
   }
 
-  public messages = []
+  public messages: any[] = []
+
+  public socket: any = null
+
+  private totalMessages = 0
+
+  private currentCursor = 1
+
+  private mailboxPath: string | null = null
 
   public async componentDidMount() {
     if (sessionStorage) {
       const googleData = sessionStorage.getItem('google')
 
       if (googleData) {
-        this.setState(
-          {
-            googleAuth: JSON.parse(googleData),
-            step: STEPS.findingMailbox,
-          },
-          async () => {
-            const mailbox = await localApi.getAllMailbox()
+        const googleAuth = JSON.parse(googleData)
 
-            this.setState(
-              {
-                mailbox,
-                step: STEPS.fetchMessages,
-              },
-              this.handleFetchMessages,
-            )
-          },
-        )
+        if (googleAuth) {
+          if (isAuthExpired(googleAuth)) {
+            sessionStorage.removeItem('google')
+            this.setState({
+              googleAuth: null,
+            })
+          }
+        }
+
+        this.socketRunWorkflow(googleAuth)
       }
     }
 
@@ -122,13 +129,14 @@ class App extends PureComponent<{}, State> {
   }
 
   public componentWillUnmount() {
+    this.socket.disconnect()
     window.removeEventListener('beforeunload', this.handleUnload)
   }
 
   private handleUnload = (e: any) => {
     const { step } = this.state
 
-    if (BLOCKED_STEPS.includes(step)) {
+    if (LOCKED_STEPS.includes(step)) {
       e.preventDefault()
 
       e.returnValue = 'We processing GMail, please wait until it will be done'
@@ -146,23 +154,7 @@ class App extends PureComponent<{}, State> {
 
     sessionStorage.setItem('google', JSON.stringify(googleAuth))
 
-    this.setState(
-      {
-        googleAuth,
-        step: STEPS.findingMailbox,
-      },
-      async () => {
-        const mailbox = await localApi.getAllMailbox()
-
-        this.setState(
-          {
-            mailbox,
-            step: STEPS.fetchMessages,
-          },
-          this.handleFetchMessages,
-        )
-      },
-    )
+    this.socketRunWorkflow(googleAuth)
   }
 
   private handleFailureLogin = (): void => {
@@ -171,45 +163,18 @@ class App extends PureComponent<{}, State> {
 
   private handleLogout = () => {
     sessionStorage.removeItem('google')
+    this.socket.disconnect()
     this.setState({
       googleAuth: null,
-      mailbox: null,
-      exampleShown: false,
       error: false,
-      messagesExample: [],
     })
-  }
-
-  private handleFetchMessages = async () => {
-    const { googleAuth, mailbox } = this.state
-
-    if (typeof googleAuth === 'object') {
-      const messagesResponse = await axios.get('/messages', {
-        params: {
-          ...(googleAuth || {}),
-          mailbox: get(mailbox, 'path'),
-          limit: `1:${get(mailbox, 'count', '*')}`,
-        },
-      })
-
-      this.messages = await parseMessages(messagesResponse.data)
-
-      this.setState({
-        step: STEPS.messagesFetched,
-        messagesExample: sampleSize(this.messages, 10),
-      })
-    }
   }
 
   private handleGoToApp = () => {
     window.open(publicRuntimeConfig.WEB_URL, '_self')
   }
 
-  private handleToggleExample = () => {
-    this.setState(state => ({ exampleShown: !state.exampleShown }))
-  }
-
-  private handleGenerateAndUploadFile = async () => {
+  private generateAndUploadFile = async () => {
     const { googleAuth } = this.state
 
     this.setState({ step: STEPS.signingFile })
@@ -238,46 +203,95 @@ class App extends PureComponent<{}, State> {
     this.setState({ step: STEPS.done })
   }
 
+  private socketRunWorkflow(googleAuth: Auth) {
+    this.setState({
+      googleAuth,
+      step: STEPS.connectingImap,
+    })
+
+    this.socket = openSocket('/', { query: qs.stringify(googleAuth) })
+
+    this.socket.on('connect', () => {
+      this.socket.on('imapConnected', ({ success }: any) => {
+        if (success) {
+          this.socketGetMailboxes()
+        }
+      })
+    })
+
+    this.socket.on('disconnect', () => {
+      this.setState({ error: true })
+    })
+  }
+
+  private socketGetMailboxes() {
+    this.setState({ step: STEPS.getMailboxes })
+    this.socket.emit('getMailboxes', (mailboxes: any) => {
+      const mailboxPath = getAllMailboxPath(mailboxes)
+
+      this.socketGetAllMailbox(mailboxPath)
+    })
+  }
+
+  private socketGetAllMailbox(mailboxPath: string) {
+    this.setState({ step: STEPS.findingAllMailbox })
+    this.socket.emit('getMailbox', mailboxPath, (mailboxInfo: any) => {
+      const mailboxData = parseMailboxData(mailboxPath, mailboxInfo)
+
+      this.totalMessages = mailboxData.count
+      this.mailboxPath = mailboxData.path
+
+      this.socketRunMessagesFetch()
+    })
+  }
+
+  private socketRunMessagesFetch() {
+    const { step } = this.state
+
+    const start = this.currentCursor
+    const end = Math.min(this.currentCursor + LIMIT - 1, this.totalMessages)
+
+    if (step !== STEPS.fetchMessages) {
+      this.setState({ step: STEPS.fetchMessages })
+    }
+
+    this.socket.emit(
+      'getMessages',
+      this.mailboxPath,
+      start,
+      end,
+      (messages: any) => {
+        this.currentCursor = end + 1
+        this.messages = [...this.messages, ...parseMessages(messages)]
+
+        this.setState({ fetchedMessagesCount: end })
+
+        if (this.currentCursor >= this.totalMessages) {
+          this.generateAndUploadFile()
+        } else {
+          this.socketRunMessagesFetch()
+        }
+      },
+    )
+  }
+
   private renderStatus() {
-    const { step, googleAuth, mailbox } = this.state
+    const { step, googleAuth, fetchedMessagesCount } = this.state
 
     switch (step) {
-      case STEPS.findingMailbox:
+      case STEPS.connectingImap:
+        return renderLoading(`Connecting IMAP...`)
+      case STEPS.getMailboxes:
+        return renderLoading(
+          `Get list of mailboxes for "${get(googleAuth, 'email')}"`,
+        )
+      case STEPS.findingAllMailbox:
         return renderLoading(
           `Search for main mailbox in "${get(googleAuth, 'email')}"`,
         )
       case STEPS.fetchMessages:
         return renderLoading(
-          `Fetching ${get(mailbox, 'count')} messages from "${get(
-            mailbox,
-            'path',
-          )}"`,
-        )
-      case STEPS.messagesFetched:
-        return (
-          <Upload>
-            <Text width={1}>
-              We have fetched from/to information for all messages in your inbox
-              (total: {this.messages.length}, see data sample{' '}
-              <Link color="#ffffff" href="#" onClick={this.handleToggleExample}>
-                here
-              </Link>
-              )
-              <br />
-              <br />
-              Do you want to Continue and upload them to HumanOS?
-            </Text>
-            <Button
-              bg="#449aff"
-              color="#ffffff"
-              mx={0}
-              my={4}
-              type="button"
-              onClick={this.handleGenerateAndUploadFile}
-            >
-              Upload
-            </Button>
-          </Upload>
+          `Fetching ${fetchedMessagesCount} of ${this.totalMessages} messages from "${this.mailboxPath}"`,
         )
       case STEPS.signingFile:
         return renderLoading(`Signing metadata file to upload...`)
@@ -289,7 +303,7 @@ class App extends PureComponent<{}, State> {
         return (
           <Upload>
             <Text width={1}>
-              Your data has been uploaded. <br /> 
+              Your data has been uploaded. <br />
               It will take some time to process it. <br />
               We will notify via email once it is done. <br />
               You can use the App in the meantime.
@@ -312,29 +326,13 @@ class App extends PureComponent<{}, State> {
   }
 
   public render() {
-    const { googleAuth, error, exampleShown, messagesExample } = this.state
+    const { googleAuth, error } = this.state
 
     return (
       <>
         {error && <Box>Error occured</Box>}
         {googleAuth ? (
           <>
-            {exampleShown && (
-              <Example>
-                <Button
-                  color="#db3a7b"
-                  type="button"
-                  onClick={this.handleToggleExample}
-                >
-                  close
-                </Button>
-                <Pre>
-                  ...{'\n'}
-                  {JSON.stringify(messagesExample, null, 2)}
-                  {'\n'}...
-                </Pre>
-              </Example>
-            )}
             <Overlay>{this.renderStatus()}</Overlay>
             <Header>
               <button
