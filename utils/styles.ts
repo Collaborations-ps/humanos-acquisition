@@ -179,3 +179,30 @@ export const Bolder = styled.span`
 export const Bold = styled.span`
   font-weight: bold;
 `
+
+type ProgressProps = {
+  value: number
+}
+
+export const Progress = styled.div<ProgressProps>`
+  height: 16px;
+  border-radius: 8px;
+  border: 2px solid white;
+  background: none;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: all 1s ease-out;
+
+  :after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    width: ${({ value }) => value}%;
+    background: white;
+    border-radius: 8px;
+    transition: all 1s ease-out;
+  }
+`

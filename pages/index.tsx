@@ -9,8 +9,6 @@ import qs from 'qs'
 
 import get from 'lodash/get'
 
-import { Line } from 'rc-progress'
-
 import { Box, Image, Flex, Card, Text, Link, Button } from 'rebass'
 
 import {
@@ -23,6 +21,7 @@ import {
   Accent,
   Bolder,
   Bold,
+  Progress,
 } from '../utils/styles'
 
 import { getAllMailboxPath, parseMailboxData, parseMessages } from '../utils'
@@ -87,7 +86,7 @@ function isAuthExpired(authData: Auth) {
   return authData.expiresAt < +new Date()
 }
 
-const LIMIT = 100
+const LIMIT = 500
 
 class App extends PureComponent<{}, State> {
   public state = {
@@ -173,7 +172,7 @@ class App extends PureComponent<{}, State> {
   }
 
   private handleGoToApp = () => {
-    window.open(publicRuntimeConfig.WEB_URL + '/app/individual', '_self')
+    window.open(`${publicRuntimeConfig.WEB_URL}/app/individual`, '_self')
   }
 
   private generateAndUploadFile = async () => {
@@ -300,17 +299,12 @@ class App extends PureComponent<{}, State> {
             To: <br />
             From: <br />
             You cannot leave the page while the data is being processed.
-            <Box mt={4} height={48} width={1 / 4}>
-              <Line
-                percent={fetchedMessagesCount/this.totalMessages*100}
-                strokeColor="#449aff"
-                strokeLinecap="butt"
-                strokeWidth={1}
-                style={{height: '32px', width: '100%'}}
+            <Box height={48} mt={4} width={1 / 4}>
+              <Progress
+                value={(fetchedMessagesCount / this.totalMessages) * 100}
               />
             </Box>
-            
-          </>
+          </>,
         )
       case STEPS.signingFile:
         return renderLoading(`Signing metadata file to upload...`)
