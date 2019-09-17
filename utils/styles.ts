@@ -185,9 +185,10 @@ type ProgressProps = {
 }
 
 export const Progress = styled.div<ProgressProps>`
-  height: 16px;
-  border-radius: 8px;
-  border: 2px solid white;
+  height: 24px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 2px white;
   background: none;
   width: 100%;
   position: relative;
@@ -202,7 +203,7 @@ export const Progress = styled.div<ProgressProps>`
     left: -1px;
     width: ${({ value }) => value}%;
     background: white;
-    border-radius: 8px;
+    border-radius: 14px;
     transition: all 1s ease-out;
   }
 `

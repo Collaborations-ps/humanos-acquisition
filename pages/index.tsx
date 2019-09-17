@@ -292,19 +292,46 @@ class App extends PureComponent<{}, State> {
         )
       case STEPS.fetchMessages:
         return renderLoading(
-          // `Fetching ${fetchedMessagesCount} of ${this.totalMessages} messages from "${this.mailboxPath}"`,
-          <>
-            We found {this.totalMessages} emails. <br />
+          <Box
+            color="#ffffff"
+            fontSize="16px"
+            sx={{ lineHeight: 1.8, fontWeight: 500 }}
+          >
+            {`We found ${this.totalMessages} emails.`.toUpperCase()} <br />
             We are collecting the following fields ONLY: <br />
-            To: <br />
-            From: <br />
-            You cannot leave the page while the data is being processed.
-            <Box height={48} mt={4} width={1 / 4}>
+            <Flex
+              bg="#fafbfd"
+              flexDirection="column"
+              my={3}
+              px={3}
+              py={2}
+              sx={{
+                borderRadius: '8px',
+                border: '1px solid #e3e3e6',
+              }}
+            >
+              <Flex justifyContent="space-between" mb={1}>
+                <Text color="#364152" fontSize={['10px', '12px']}>
+                  To
+                </Text>
+                <Text color="#364152" fontSize={['10px', '12px']}>
+                  Cc Bcc
+                </Text>
+              </Flex>
+              <Box bg="#e3e3e6" height="1px" width="100%" />
+              <Text color="#364152" fontSize={['10px', '12px']} mt={1}>
+                From
+              </Text>
+            </Flex>
+            {'You cannot leave the page while the data is being processed.'.toUpperCase()}
+            <Box mt={3} width={1}>
               <Progress
-                value={(fetchedMessagesCount / this.totalMessages) * 100}
+                value={Math.round(
+                  (fetchedMessagesCount / this.totalMessages) * 100,
+                )}
               />
             </Box>
-          </>,
+          </Box>,
         )
       case STEPS.signingFile:
         return renderLoading(`Signing metadata file to upload...`)
