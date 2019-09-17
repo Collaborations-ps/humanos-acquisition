@@ -9,6 +9,8 @@ import qs from 'qs'
 
 import get from 'lodash/get'
 
+import { Line } from 'rc-progress'
+
 import { Box, Image, Flex, Card, Text, Link, Button } from 'rebass'
 
 import {
@@ -171,7 +173,7 @@ class App extends PureComponent<{}, State> {
   }
 
   private handleGoToApp = () => {
-    window.open(publicRuntimeConfig.WEB_URL, '_self')
+    window.open(publicRuntimeConfig.WEB_URL + '/app/individual', '_self')
   }
 
   private generateAndUploadFile = async () => {
@@ -291,7 +293,24 @@ class App extends PureComponent<{}, State> {
         )
       case STEPS.fetchMessages:
         return renderLoading(
-          `Fetching ${fetchedMessagesCount} of ${this.totalMessages} messages from "${this.mailboxPath}"`,
+          // `Fetching ${fetchedMessagesCount} of ${this.totalMessages} messages from "${this.mailboxPath}"`,
+          <>
+            We found {this.totalMessages} emails. <br />
+            We are collecting the following fields ONLY: <br />
+            To: <br />
+            From: <br />
+            You cannot leave the page while the data is being processed.
+            <Box mt={4} height={48} width={1 / 4}>
+              <Line
+                percent={fetchedMessagesCount/this.totalMessages*100}
+                strokeColor="#449aff"
+                strokeLinecap="butt"
+                strokeWidth={1}
+                style={{height: '32px', width: '100%'}}
+              />
+            </Box>
+            
+          </>
         )
       case STEPS.signingFile:
         return renderLoading(`Signing metadata file to upload...`)
