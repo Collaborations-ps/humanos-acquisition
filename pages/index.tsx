@@ -323,7 +323,8 @@ class App extends PureComponent<{}, State> {
                 From
               </Text>
             </Flex>
-            {'You cannot leave the page while the data is being processed.'.toUpperCase()}
+            Please do not leave this page while we are processing your To/From
+            data
             <Box mt={3} width={1}>
               <Progress
                 value={Math.round(
@@ -342,11 +343,12 @@ class App extends PureComponent<{}, State> {
       case STEPS.done:
         return (
           <Upload>
-            <Text width={1}>
-              Your data has been uploaded. <br />
-              It will take some time to process it. <br />
-              We will notify via email once it is done. <br />
-              You can use the App in the meantime.
+            <Text width={1 / 2}>
+              Thank you! <br />
+              Your To/From information has been uploaded to our secure Amazon
+              servers where it is being processed for helping you and your
+              network. <br />
+              We will send you an email once it is complete. <br />
             </Text>
             <Button
               bg="#449aff"
@@ -356,7 +358,7 @@ class App extends PureComponent<{}, State> {
               type="button"
               onClick={this.handleGoToApp}
             >
-              GO TO APP
+              Open HumanOS
             </Button>
           </Upload>
         )
