@@ -1,6 +1,7 @@
 const pick = require('lodash/pick')
 
 const createImapClient = require('./imap')
+const Sentry = require('./sentry')
 
 function createSocket(io) {
   io.on('connection', async function connection(socket) {
@@ -17,6 +18,7 @@ function createSocket(io) {
 
     if (error) {
       socket.disconnect()
+      Sentry.captureException(error)
     } else {
       socket.emit('imapConnected', { success: true })
     }

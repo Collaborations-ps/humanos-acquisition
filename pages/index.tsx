@@ -219,10 +219,6 @@ class App extends PureComponent<{}, State> {
         }
       })
     })
-
-    this.socket.on('disconnect', () => {
-      this.setState({ error: true })
-    })
   }
 
   private socketGetMailboxes() {

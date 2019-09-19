@@ -7,6 +7,7 @@ const IO = require('socket.io')
 const router = require('./routes')
 
 const createSocket = require('./services/socket')
+const Sentry = require('./services/sentry')
 
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -33,6 +34,10 @@ app.prepare().then(() => {
   })
 
   koa.use(router.routes())
+
+  koa.on('error', err => {
+    Sentry.captureException(err)
+  })
 
   server
     .listen(port, () => {

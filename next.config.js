@@ -6,6 +6,7 @@ module.exports = withImages({
       API_HOST: process.env.API_HOST,
       WEB_URL: process.env.WEB_URL,
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+      SENTRY_DSN: process.env.SENTRY_DSN,
     },
   },
 )
