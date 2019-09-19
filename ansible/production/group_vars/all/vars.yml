@@ -4,6 +4,7 @@ port: 80
 api_host: https://api.os.collaboration.ai
 web_url: https://os.collaboration.ai
 google_client_id: 841460680798-6fjhk5geea9cm6huajcdfokj795spa29.apps.googleusercontent.com
+sentry_dsn: https://ea19810535124b5784d374afbb9e7e90@sentry.io/1731689
 aws_region: us-west-2
 cluster: humanos-prod
 acquisition_image_name: humanos-acquisition

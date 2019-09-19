@@ -113,7 +113,8 @@ export const Example = styled(Box)`
   font-size: 14px;
 
   pre {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
     background: none !important;
     overflow: scroll !important;
     max-height: calc(100vh - 16px) !important;
@@ -136,6 +137,7 @@ export const GoogleLogin = styled(GoogleLoginBase)`
   font-weight: 500 !important;
   color: #364152 !important;
   padding: 0 24px !important;
+  margin: 0 8px !important;
 `
 
 export const Overlay = styled(Box)`
@@ -167,7 +169,7 @@ export const DescriptionText = styled(Text)({
 })
 
 export const Accent = styled.span`
-   color: #db3a7b;
+  color: #db3a7b;
 `
 
 export const Bolder = styled.span`
@@ -176,4 +178,32 @@ export const Bolder = styled.span`
 
 export const Bold = styled.span`
   font-weight: bold;
+`
+
+type ProgressProps = {
+  value: number
+}
+
+export const Progress = styled.div<ProgressProps>`
+  height: 24px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 2px white;
+  background: none;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: all 1s ease-out;
+
+  :after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    width: ${({ value }) => value}%;
+    background: white;
+    border-radius: 14px;
+    transition: all 1s ease-out;
+  }
 `

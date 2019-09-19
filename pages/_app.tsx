@@ -2,6 +2,7 @@ import React from 'react'
 import App, { AppContext } from 'next/app'
 import Head from 'next/head'
 import { Global } from '@emotion/core'
+import * as Sentry from '@sentry/browser'
 
 import { Image, Link } from 'rebass'
 
@@ -10,6 +11,8 @@ import { publicRuntimeConfig } from '../utils/config'
 import Api from '../utils/api'
 
 import { globalStyles, Logo, Main, Block } from '../utils/styles'
+
+Sentry.init({ dsn: publicRuntimeConfig.SENTRY_DSN })
 
 export default class AcquisitionApp extends App {
   public state = {

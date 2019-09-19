@@ -1,4 +1,4 @@
-const { default: ImapClient, LOG_LEVEL_WARN } = require('emailjs-imap-client')
+const { default: ImapClient, LOG_LEVEL_NONE } = require('emailjs-imap-client')
 
 async function createImapClient(user, xoauth2) {
   let client = null
@@ -6,7 +6,7 @@ async function createImapClient(user, xoauth2) {
     client = new ImapClient('imap.gmail.com', 993, {
       useSecureTransport: true,
       requireTLS: true,
-      logLevel: LOG_LEVEL_WARN,
+      logLevel: LOG_LEVEL_NONE,
       auth: {
         user,
         xoauth2,
