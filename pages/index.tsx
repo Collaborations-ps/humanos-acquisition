@@ -357,7 +357,7 @@ class App extends PureComponent<{}, State> {
               information has been uploaded to our secure Amazon servers where
               it is being processed for helping you and your network. <br />{' '}
               <br />
-              WE WILL SEND YOU AN EMAIL ONCE IT IS COMPLETE.
+              We will send you an email once it is complete.
               <br />
             </Text>
             <Button
