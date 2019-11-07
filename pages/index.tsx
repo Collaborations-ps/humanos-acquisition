@@ -450,7 +450,15 @@ class App extends PureComponent<{}, State> {
                   TO UNDERSTANDING YOUR NETWORK AND HELP YOU SUCCEED.
                 </Bold>
                 <br /> <br />
-                We have published open source version of our code to prove
+                We have published open source version of{' '}
+                <a
+                  href="https://github.com/Collaborations-ps/humanos-acquisition/blob/master/server/services/socket.js#L45"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  our code
+                </a>{' '}
+                to prove
                 <br />
                 <Accent>
                   we will never touch the content of your email
