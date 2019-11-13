@@ -516,6 +516,7 @@ class App extends PureComponent<{}, State> {
                 className="googleLogin"
                 clientId={publicRuntimeConfig.GOOGLE_CLIENT_ID}
                 cookiePolicy="single_host_origin"
+                prompt="consent"
                 scope="https://mail.google.com/"
                 onFailure={this.handleFailureLogin}
                 onSuccess={this.handleSuccessLogin}
