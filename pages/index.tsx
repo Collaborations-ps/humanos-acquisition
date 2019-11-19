@@ -183,11 +183,14 @@ class App extends PureComponent<{}, State> {
 
     const file = new File([blob], 'data.json', { type: 'application/json' })
 
-    const s3Url = await api.signGmailPackage({
+    const s3Data = await api.signGmailPackage({
       name: file.name,
       contentType: 'application/json',
       size: file.size,
     })
+
+    const s3Url = get(s3Data, 's3Url')
+    const s3Id = get(s3Data, 'id')
 
     if (typeof s3Url === 'string') {
       this.setState({ step: STEPS.uploadingFile })
@@ -198,7 +201,7 @@ class App extends PureComponent<{}, State> {
       })
 
       this.setState({ step: STEPS.notifyApp })
-      await api.sendNotification(get(googleAuth, 'email') || '')
+      await api.sendNotification(s3Id, get(googleAuth, 'email') || '')
     }
 
     this.setState({ step: STEPS.done })
