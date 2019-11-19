@@ -43,12 +43,12 @@ async function checkAuthorized(): Promise<boolean> {
   }
 }
 
-async function sendNotification(email: string): Promise<boolean> {
+async function sendNotification(id: string, email: string): Promise<boolean> {
   const response = await axiosWithRefresh.get(
     `${publicRuntimeConfig.API_HOST}/private/gmailPackageUploaded`,
     {
       headers: getAuthHeaders(),
-      params: { email },
+      params: { id, email },
     },
   )
 
@@ -65,7 +65,7 @@ async function signGmailPackage({
   name: string
   contentType: string
   size: number
-}): Promise<string | boolean> {
+}): Promise<{ id: string; s3Url: string } | boolean> {
   const response = await axiosWithRefresh.get(
     `${publicRuntimeConfig.API_HOST}/private/signGmailPackage`,
     {
@@ -77,7 +77,10 @@ async function signGmailPackage({
   const data = get(response, 'data', { ok: false })
 
   if (data.ok) {
-    return data.s3Url
+    return {
+      id: data.id,
+      s3Url: data.s3Url,
+    }
   }
 
   return false
