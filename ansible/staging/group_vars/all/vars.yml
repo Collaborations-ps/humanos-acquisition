@@ -16,5 +16,5 @@ acquisition_memory: 1024
 acquisition_container_cpu: 384
 acquisition_container_memory: 768
 acquisition_desired_count: 1
-subnets: ['subnet-0c4c19d4f4e6fa369', 'subnet-029ed0948dd943337']
-security_groups: ['sg-0f52695203cfc1caf']
+subnets: ['subnet-085d2c428db407ee1', 'subnet-06690d2827cd6fa5c']
+security_groups: ['sg-0b1635efa969d6f2f']

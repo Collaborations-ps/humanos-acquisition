@@ -38,7 +38,6 @@ enum STEPS {
   signingFile,
   uploadingFile,
   notifyApp,
-  done,
 }
 
 const LOCKED_STEPS = [
@@ -63,6 +62,7 @@ interface State {
   error: boolean
   step: STEPS
   fetchedMessagesCount: number
+  done: boolean
 }
 
 function parseLoginResponse(response: GoogleLoginResponse): Auth {
@@ -94,6 +94,7 @@ class App extends PureComponent<{}, State> {
     error: false,
     step: STEPS.initial,
     fetchedMessagesCount: 0,
+    done: false,
   }
 
   public messages: any[] = []
@@ -162,12 +163,15 @@ class App extends PureComponent<{}, State> {
     this.setState({ error: true })
   }
 
-  private handleLogout = () => {
+  private handleLogout = (done = false) => () => {
     sessionStorage.removeItem('google')
     this.socket.disconnect()
     this.setState({
       googleAuth: null,
       error: false,
+      step: STEPS.initial,
+      fetchedMessagesCount: 0,
+      done,
     })
   }
 
@@ -204,10 +208,16 @@ class App extends PureComponent<{}, State> {
       await api.sendNotification(s3Id, get(googleAuth, 'email') || '')
     }
 
-    this.setState({ step: STEPS.done })
+    this.handleLogout(true)()
   }
 
   private socketRunWorkflow(googleAuth: Auth) {
+    const { step } = this.state
+
+    if (step !== STEPS.initial) {
+      return
+    }
+
     this.setState({
       googleAuth,
       step: STEPS.connectingImap,
@@ -339,51 +349,61 @@ class App extends PureComponent<{}, State> {
         return renderLoading(`Uploading metadata file...`)
       case STEPS.notifyApp:
         return renderLoading(`Notify application about upload...`)
-      case STEPS.done:
-        return (
-          <Upload>
-            <Text lineHeight="1.5" width={1 / 2}>
-              THANK YOU!
-              <br /> <br />
-              Your{' '}
-              <Box
-                bg="white"
-                color="#364152"
-                fontSize="12px"
-                mx="4px"
-                px="8px"
-                py="4px"
-                sx={{ borderRadius: '4px', display: 'inline' }}
-              >
-                To/From
-              </Box>{' '}
-              information has been uploaded to our secure Amazon servers where
-              it is being processed for helping you and your network. <br />{' '}
-              <br />
-              We will send you an email once it is complete.
-              <br />
-            </Text>
-            <Button
-              bg="white"
-              color="#364152"
-              mx={0}
-              my={4}
-              px={4}
-              py={2}
-              type="button"
-              onClick={this.handleGoToApp}
-            >
-              Open HumanOS
-            </Button>
-          </Upload>
-        )
       default:
         return null
     }
   }
 
+  public renderDone() {
+    const { error } = this.state
+    return (
+      <>
+        {error && <Box>Error occured</Box>}
+
+        <Upload>
+          <Text lineHeight="1.5" width={1 / 2}>
+            THANK YOU!
+            <br /> <br />
+            Your{' '}
+            <Box
+              bg="white"
+              color="#364152"
+              fontSize="12px"
+              mx="4px"
+              px="8px"
+              py="4px"
+              sx={{ borderRadius: '4px', display: 'inline' }}
+            >
+              To/From
+            </Box>{' '}
+            information has been uploaded to our secure Amazon servers where it
+            is being processed for helping you and your network. <br /> <br />
+            We will send you an email once it is complete.
+            <br />
+          </Text>
+          <Button
+            bg="white"
+            color="#364152"
+            mx={0}
+            my={4}
+            px={4}
+            py={2}
+            type="button"
+            onClick={this.handleGoToApp}
+          >
+            Open HumanOS
+          </Button>
+        </Upload>
+      </>
+    )
+  }
+
   public render() {
-    const { googleAuth, error } = this.state
+    const { googleAuth, error, done } = this.state
+
+    if (done) {
+      return this.renderDone()
+    }
 
     return (
       <>
@@ -395,7 +415,7 @@ class App extends PureComponent<{}, State> {
               <button
                 className="small"
                 type="button"
-                onClick={this.handleLogout}
+                onClick={this.handleLogout(false)}
               >
                 Logout
               </button>
