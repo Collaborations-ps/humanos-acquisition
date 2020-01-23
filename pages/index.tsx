@@ -391,7 +391,7 @@ class App extends PureComponent<{}, State> {
             type="button"
             onClick={this.handleGoToApp}
           >
-            Open HumanOS
+            Open NetworkOs
           </Button>
         </Upload>
       </>
