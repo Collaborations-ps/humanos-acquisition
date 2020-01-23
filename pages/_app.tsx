@@ -44,7 +44,7 @@ export default class AcquisitionApp extends App {
     return loaded ? (
       <Block>
         Not authorized. Please login at{' '}
-        <Link href={publicRuntimeConfig.WEB_URL}>HumanOS</Link>, then go back
+        <Link href={publicRuntimeConfig.WEB_URL}>NetworkOS</Link>, then go back
       </Block>
     ) : (
       <Block>Loading...</Block>
@@ -59,7 +59,7 @@ export default class AcquisitionApp extends App {
       <>
         <Global styles={globalStyles} />
         <Head>
-          <title>HumanOS GMail Acquisition</title>
+          <title>NetworkOs GMail Acquisition</title>
           <link
             href="/static/favicon.ico"
             rel="shortcut icon"
@@ -73,7 +73,7 @@ export default class AcquisitionApp extends App {
         </Head>
         <Main>
           <Logo>
-            <Image alt="HumanOS GMail Acquisition" src="/static/logo.svg" />
+            <Image alt="NetworkOS GMail Acquisition" src="/static/logo.svg" />
             &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
           </Logo>
           {authorized ? (
