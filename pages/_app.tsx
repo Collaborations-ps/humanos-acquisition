@@ -59,7 +59,7 @@ export default class AcquisitionApp extends App {
       <>
         <Global styles={globalStyles} />
         <Head>
-          <title>NetworkOs GMail Acquisition</title>
+          <title>NetworkOS GMail Acquisition</title>
           <link
             href="/static/favicon.ico"
             rel="shortcut icon"
