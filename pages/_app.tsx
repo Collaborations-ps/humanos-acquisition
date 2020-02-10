@@ -59,7 +59,7 @@ export default class AcquisitionApp extends App {
       <>
         <Global styles={globalStyles} />
         <Head>
-          <title>NetworkOS GMail Acquisition</title>
+          <title>NetworkOS Gmail Acquisition</title>
           <link
             href="/static/favicon.ico"
             rel="shortcut icon"
@@ -73,8 +73,8 @@ export default class AcquisitionApp extends App {
         </Head>
         <Main>
           <Logo>
-            <Image alt="NetworkOS GMail Acquisition" src="/static/logo.svg" />
-            &nbsp;&nbsp;|&nbsp;&nbsp;<span>GMail Acquisition</span>
+            <Image alt="NetworkOS Gmail Acquisition" src="/static/logo.svg" />
+            &nbsp;&nbsp;|&nbsp;&nbsp;<span>Gmail Acquisition</span>
           </Logo>
           {authorized ? (
             <Component {...pageProps} />
