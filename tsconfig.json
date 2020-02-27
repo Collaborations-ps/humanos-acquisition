@@ -4,7 +4,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "declaration": false,
     "sourceMap": true,
-    "incremental": true,
     "allowJs": false,
     "skipLibCheck": true,
     "removeComments": true,

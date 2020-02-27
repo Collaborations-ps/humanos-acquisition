@@ -22,6 +22,7 @@ module.exports = {
     'prettier/prettier': [1, prettierOptions],
     'no-console': isProduction ? 2 : 1,
     'no-debugger': isProduction ? 2 : 1,
+    'import/extensions': [2, 'ignorePackages', { js: 'never', ts: 'never', tsx: 'never' }],
     'jsx-a11y/anchor-is-valid': 0,
     'react/jsx-no-bind': 2,
     'react/jsx-boolean-value': 2,

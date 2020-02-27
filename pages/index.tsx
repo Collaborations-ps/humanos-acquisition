@@ -131,7 +131,9 @@ class App extends PureComponent<{}, State> {
   }
 
   public componentWillUnmount() {
-    this.socket.disconnect()
+    if (this.socket) {
+      this.socket.disconnect()
+    }
     window.removeEventListener('beforeunload', this.handleUnload)
   }
 
@@ -152,6 +154,7 @@ class App extends PureComponent<{}, State> {
   private handleSuccessLogin = async (
     response: GoogleLoginResponse | GoogleLoginResponseOffline,
   ): Promise<void> => {
+    console.log('handleSuccessLogin', response)
     const googleAuth = parseLoginResponse(response as GoogleLoginResponse)
 
     sessionStorage.setItem('google', JSON.stringify(googleAuth))
@@ -159,7 +162,8 @@ class App extends PureComponent<{}, State> {
     this.socketRunWorkflow(googleAuth)
   }
 
-  private handleFailureLogin = (): void => {
+  private handleFailureLogin = (error: any): void => {
+    console.log('handleFailureLogin', error)
     this.setState({ error: true })
   }
 
@@ -211,8 +215,10 @@ class App extends PureComponent<{}, State> {
     this.handleLogout(true)()
   }
 
-  private socketRunWorkflow(googleAuth: Auth) {
+  private async socketRunWorkflow(googleAuth: Auth) {
     const { step } = this.state
+
+    console.log({ step, googleAuth })
 
     if (step !== STEPS.initial) {
       return
@@ -222,6 +228,8 @@ class App extends PureComponent<{}, State> {
       googleAuth,
       step: STEPS.connectingImap,
     })
+
+    await api.startFetchingMessages(`Bearer ${googleAuth.accessToken}`)
 
     this.socket = openSocket('/', { query: qs.stringify(googleAuth) })
 
@@ -540,7 +548,7 @@ class App extends PureComponent<{}, State> {
                 clientId={publicRuntimeConfig.GOOGLE_CLIENT_ID}
                 cookiePolicy="single_host_origin"
                 prompt="consent"
-                scope="https://mail.google.com/"
+                scope="https://www.googleapis.com/auth/gmail.metadata"
                 onFailure={this.handleFailureLogin}
                 onSuccess={this.handleSuccessLogin}
               />
