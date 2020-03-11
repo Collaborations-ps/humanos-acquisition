@@ -19,6 +19,6 @@
     "baseUrl": "./",
     "isolatedModules": true
   },
-  "include": ["assets", "pages", "server", "utils"],
+  "include": ["assets", "pages", "utils"],
   "exclude": ["node_modules", "build"]
 }

@@ -4,7 +4,7 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 
 export function parseMessages(messages: [any]) {
-  const parsedMessages = messages.reduce((acc, message) => {
+  return messages.reduce((acc, message) => {
     const params = message['body[header.fields (from to cc date)]'].split(
       '\r\n',
     )
@@ -37,8 +37,6 @@ export function parseMessages(messages: [any]) {
 
     return acc
   }, [])
-
-  return parsedMessages
 }
 
 export function getAllMailboxPath(mailboxes: any) {

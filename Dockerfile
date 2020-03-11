@@ -17,7 +17,6 @@ WORKDIR /app
 COPY --from=node_cache /cache/ .
 
 COPY pages ./pages/
-COPY server ./server/
 COPY utils ./utils/
 COPY public ./public/
 COPY next.config.js ./next.config.js

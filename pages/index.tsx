@@ -229,7 +229,12 @@ class App extends PureComponent<{}, State> {
       step: STEPS.connectingImap,
     })
 
-    await api.startFetchingMessages(`Bearer ${googleAuth.accessToken}`)
+    await api.startFetchingMessages(
+      `Bearer ${googleAuth.accessToken}`,
+      ({ action, value }) => {
+        console.log({ action, value })
+      },
+    )
 
     this.socket = openSocket('/', { query: qs.stringify(googleAuth) })
 

@@ -15,7 +15,20 @@ import { parseMultipart } from './multipart'
 import forEachPromise from './forEachPromise'
 import delay from './delay'
 
-// const gmailAxios = axios.create()
+export enum ACTIONS {
+  TOTAL_MESSAGES,
+  LIST_LOADED,
+  MESSAGES_LOADED,
+  DONE,
+}
+
+interface Action {
+  action: ACTIONS
+  value?: any
+}
+
+type ActionCallback = (action: Action) => void
+
 const axiosWithRefresh = axios.create()
 
 function isTokenExpiredError(errorResponse: any): boolean {
@@ -142,6 +155,7 @@ export function makeBatchMessagesBody({
 let listsCount = 0
 
 async function getList(
+  callback: ActionCallback,
   token: string,
   allMessages: any[],
   pageToken?: string,
@@ -164,9 +178,14 @@ async function getList(
       }
 
       console.log(`Loaded ${(listsCount += 1)} pages of message ids`)
+      callback({
+        action: ACTIONS.LIST_LOADED,
+        value: { fetched: listsCount += 1, estimatedSize: list.estimatedSize },
+      })
 
       if (list.nextPageToken) {
         return getList(
+          callback,
           token,
           [...allMessages, ...list.messages],
           list.nextPageToken,
@@ -210,13 +229,14 @@ async function getMessagesChunk(messageIds: string[], token: string) {
   return get(response, 'data') || {}
 }
 
-async function startFetchingMessages(token: string) {
+async function startFetchingMessages(token: string, callback: ActionCallback) {
   listsCount = 0
   console.time('LoadLists')
-  const allMessageIds = await getList(token, [])
+  const allMessageIds = await getList(callback, token, [])
   console.timeEnd('LoadLists')
 
   console.log(`Total ${allMessageIds.length} messages`)
+  callback({ action: ACTIONS.TOTAL_MESSAGES, value: allMessageIds.length })
   const chunks = chunk(allMessageIds, 50)
 
   const allMessages: any[] = []
@@ -231,6 +251,8 @@ async function startFetchingMessages(token: string) {
     await delay(1000)
 
     loaded += messages.length
+
+    callback({ action: ACTIONS.MESSAGES_LOADED, value: loaded })
     console.log(`Loaded ${loaded} of ${allMessageIds.length} messages`)
 
     allMessages.push(...messages)
@@ -239,6 +261,7 @@ async function startFetchingMessages(token: string) {
   console.timeEnd('LoadMessages')
 
   console.log({ allMessages, withCC: filter(allMessages, item => item.cc) })
+  callback({ action: ACTIONS.DONE, value: allMessages })
 }
 
 export default {
