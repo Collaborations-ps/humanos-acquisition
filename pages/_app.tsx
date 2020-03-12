@@ -1,5 +1,5 @@
 import React from 'react'
-import App, { AppContext } from 'next/app'
+import App from 'next/app'
 import Head from 'next/head'
 import { Global } from '@emotion/core'
 import * as Sentry from '@sentry/browser'
@@ -19,16 +19,6 @@ export default class AcquisitionApp extends App {
     loaded: false,
     authorized: false,
     emails: [],
-  }
-
-  public static async getInitialProps({ Component, ctx }: AppContext) {
-    let pageProps = {}
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx)
-    }
-
-    return { pageProps }
   }
 
   public async componentDidMount() {
