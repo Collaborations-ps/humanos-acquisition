@@ -3,7 +3,7 @@ node_env: production
 port: 80
 api_host: https://api.humanos.c8.ai
 web_url: https://humanos.c8.ai
-google_client_id: 219313047580-d21scatk83efg15guk8qke0job6agvcb.apps.googleusercontent.com
+google_client_id: 331673999257-gokigfmrog0j1eucknqrk2eiglcd7p91.apps.googleusercontent.com
 sentry_dsn: https://d75883d456344b60845e311008d465aa@sentry.io/1731669
 aws_region: us-west-2
 cluster: humanos-staging

@@ -22,6 +22,10 @@ export enum ACTIONS {
   CANCELED_ON_ERROR,
 }
 
+const MAX_RESULTS = 5000
+// TODO: q not available for metadata scope
+// const q = 'newer_than:6m'
+
 interface Action {
   action: ACTIONS
   value?: any
@@ -100,7 +104,7 @@ async function getList({
         Authorization: token,
       },
       params: {
-        maxResults: 5000,
+        maxResults: MAX_RESULTS,
         pageToken,
       },
     })
