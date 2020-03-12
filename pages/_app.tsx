@@ -32,9 +32,13 @@ export default class AcquisitionApp extends App {
 
   public async componentDidMount() {
     const authorized = await Api.checkAuthorized()
+    const emails = await Api.getMyEmails()
+
+    console.log(emails)
 
     this.setState({
       authorized,
+      emails,
       loaded: true,
     })
   }
