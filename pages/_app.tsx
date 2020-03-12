@@ -18,6 +18,7 @@ export default class AcquisitionApp extends App {
   public state = {
     loaded: false,
     authorized: false,
+    emails: [],
   }
 
   public static async getInitialProps({ Component, ctx }: AppContext) {
@@ -33,8 +34,6 @@ export default class AcquisitionApp extends App {
   public async componentDidMount() {
     const authorized = await Api.checkAuthorized()
     const emails = await Api.getMyEmails()
-
-    console.log(emails)
 
     this.setState({
       authorized,
@@ -57,7 +56,7 @@ export default class AcquisitionApp extends App {
 
   public render() {
     const { Component, pageProps } = this.props
-    const { authorized } = this.state
+    const { authorized, emails } = this.state
 
     return (
       <>
@@ -81,7 +80,7 @@ export default class AcquisitionApp extends App {
             &nbsp;&nbsp;|&nbsp;&nbsp;<span>Gmail Acquisition</span>
           </Logo>
           {authorized ? (
-            <Component {...pageProps} />
+            <Component {...pageProps} emails={emails} />
           ) : (
             this.renderNotAuthorized()
           )}

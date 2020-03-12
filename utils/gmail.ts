@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { Canceler, CancelToken } from 'axios'
 import nanoid from 'nanoid'
 
 import map from 'lodash/map'
@@ -18,6 +18,8 @@ export enum ACTIONS {
   MESSAGES_LOADED,
   DONE,
   ERROR,
+  CANCELED,
+  CANCELED_ON_ERROR,
 }
 
 interface Action {
@@ -25,7 +27,10 @@ interface Action {
   value?: any
 }
 
-type ActionCallback = (action: Action) => void
+interface ActionCallback {
+  onAction: (action: Action) => void
+  cancel: Canceler
+}
 
 function parseMessage(message: any) {
   const headers = keyBy(get(message, 'payload.headers'), 'name')
@@ -41,13 +46,14 @@ function parseMessage(message: any) {
   }
 }
 
+interface MakeBatchMessagesBody {
+  boundary: string
+  messageIds: string[]
+}
 export function makeBatchMessagesBody({
   boundary,
   messageIds,
-}: {
-  boundary: string
-  messageIds: string[]
-}) {
+}: MakeBatchMessagesBody) {
   const batchContent = []
 
   batchContent.push('')
@@ -73,14 +79,23 @@ export function makeBatchMessagesBody({
 
 let listsCount = 0
 
-async function getList(
-  callback: ActionCallback,
-  token: string,
-  allMessages: any[],
-  pageToken?: string,
-): Promise<any[]> {
+interface GetList {
+  callback: ActionCallback
+  cancelToken: CancelToken
+  token: string
+  allMessages: any[]
+  pageToken?: string
+}
+async function getList({
+  callback,
+  cancelToken,
+  token,
+  allMessages,
+  pageToken,
+}: GetList): Promise<any[]> {
   return axios
     .get('https://www.googleapis.com/gmail/v1/users/me/messages', {
+      cancelToken,
       headers: {
         Authorization: token,
       },
@@ -89,32 +104,43 @@ async function getList(
         pageToken,
       },
     })
-    .then(response => {
+    .then(async response => {
       const list = {
         messages: map(get(response, 'data.messages'), 'id'),
         nextPageToken: get(response, 'data.nextPageToken'),
         estimatedSize: get(response, 'data.resultSizeEstimate'),
       }
 
-      callback({
+      callback.onAction({
         action: ACTIONS.LIST_LOADED,
         value: listsCount += 1,
       })
 
       if (list.nextPageToken) {
-        return getList(
+        return getList({
           callback,
+          cancelToken,
           token,
-          [...allMessages, ...list.messages],
-          list.nextPageToken,
-        )
+          allMessages: [...allMessages, ...list.messages],
+          pageToken: list.nextPageToken,
+        })
       }
 
       return [...allMessages, ...list.messages]
     })
 }
 
-async function getMessagesChunk(messageIds: string[], token: string) {
+interface GetMessagesChunk {
+  cancelToken: CancelToken
+  messageIds: string[]
+  token: string
+}
+
+async function getMessagesChunk({
+  cancelToken,
+  messageIds,
+  token,
+}: GetMessagesChunk) {
   const authHeaders = {
     Authorization: token,
   }
@@ -128,6 +154,7 @@ async function getMessagesChunk(messageIds: string[], token: string) {
       messageIds,
     }),
     {
+      cancelToken,
       headers: {
         ...authHeaders,
         'Content-Type': `multipart/mixed; boundary=batch_${boundary}`,
@@ -147,16 +174,39 @@ async function getMessagesChunk(messageIds: string[], token: string) {
   return get(response, 'data') || {}
 }
 
-export default async function startFetchingMessages(
-  token: string,
-  callback: ActionCallback,
-) {
-  try {
-    callback({ action: ACTIONS.START })
-    listsCount = 0
-    const allMessageIds = await getList(callback, token, [])
+interface StartFetchingMessages {
+  token: string
+  callback: ActionCallback
+}
+export default async function startFetchingMessages({
+  token,
+  callback,
+}: StartFetchingMessages) {
+  const source = axios.CancelToken.source()
 
-    callback({ action: ACTIONS.TOTAL_MESSAGES, value: allMessageIds.length })
+  // eslint-disable-next-line no-param-reassign
+  callback.cancel = source.cancel
+
+  source.token.promise.then(({ message }: any) => {
+    callback.onAction({ action: message })
+  })
+
+  try {
+    callback.onAction({ action: ACTIONS.START })
+
+    listsCount = 0
+    const allMessageIds = await getList({
+      callback,
+      cancelToken: source.token,
+      token,
+      allMessages: [],
+    })
+
+    callback.onAction({
+      action: ACTIONS.TOTAL_MESSAGES,
+      value: allMessageIds.length,
+    })
+
     const chunks = chunk(allMessageIds, 50)
 
     const allMessages: any[] = []
@@ -164,20 +214,26 @@ export default async function startFetchingMessages(
 
     await forEachPromise(chunks, async (messageIds: string[]) => {
       const messages = map(
-        await getMessagesChunk(messageIds, token),
+        await getMessagesChunk({
+          cancelToken: source.token,
+          messageIds,
+          token,
+        }),
         parseMessage,
       )
       await delay(1000)
 
       loaded += messages.length
 
-      callback({ action: ACTIONS.MESSAGES_LOADED, value: loaded })
+      callback.onAction({ action: ACTIONS.MESSAGES_LOADED, value: loaded })
 
       allMessages.push(...messages)
     })
 
-    callback({ action: ACTIONS.DONE, value: allMessages })
+    callback.onAction({ action: ACTIONS.DONE, value: allMessages })
   } catch (error) {
-    callback({ action: ACTIONS.ERROR, value: error })
+    if (error.message !== ACTIONS.CANCELED) {
+      callback.onAction({ action: ACTIONS.ERROR, value: error.message })
+    }
   }
 }

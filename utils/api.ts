@@ -27,6 +27,7 @@ axiosWithRefresh.interceptors.response.use(
 )
 
 async function checkAuthorized(): Promise<boolean> {
+  // TODO: should store refreshed access token
   try {
     const response = await axiosWithRefresh.get(
       `${publicRuntimeConfig.API_HOST}/private/checkAuth`,

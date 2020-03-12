@@ -4,18 +4,19 @@ import {
   GoogleLoginResponseOffline,
 } from 'react-google-login'
 import axios from 'axios'
-import { Duration } from 'luxon'
-import pluralize from 'pluralize'
-import { Box, Flex, Image, Text } from 'rebass'
+import { Box, Button, Flex, Image, Text } from 'rebass'
 
 import get from 'lodash/get'
+import noop from 'lodash/noop'
 
 import { Header, Loading, Overlay, Progress } from '../utils/styles'
-
+import { formatTimeLeft } from '../utils/time'
 import api from '../utils/api'
 import startFetchingMessages, { ACTIONS } from '../utils/gmail'
 
 import Done from '../components/Done'
+import Error from '../components/Error'
+import WrongEmail from '../components/WrongEmail'
 import Information from '../components/Information'
 
 enum STEPS {
@@ -39,21 +40,7 @@ const LOCKED_STEPS = [
   STEPS.notifyApp,
 ]
 
-interface Auth {
-  accessToken: string
-  email: string
-  expiresAt: number
-}
-
-interface State {
-  googleAuth?: Auth | null
-  error: boolean
-  step: STEPS
-  fetchedMessagesCount: number
-  totalMessagesCount: number
-  listCount: number
-  done: boolean
-}
+const CANCELABLE_STEPS = [STEPS.fetchLists, STEPS.fetchMessages]
 
 function parseLoginResponse(response: GoogleLoginResponse): Auth {
   const authResponse = response.getAuthResponse()
@@ -64,54 +51,33 @@ function parseLoginResponse(response: GoogleLoginResponse): Auth {
   }
 }
 
-function renderLoading(children: any) {
-  return (
-    <Loading>
-      <Image alt="loader" mb={4} src="/static/loader.svg" /> {children}
-    </Loading>
-  )
+interface Auth {
+  accessToken: string
+  email: string
+  expiresAt: number
 }
-
 function isAuthExpired(authData: Auth) {
   return authData.expiresAt < +new Date()
 }
 
-function formatTimeLeft(messagesLeft: number) {
-  const estimatedLeft = Duration.fromMillis((messagesLeft / 50) * 1250)
-
-  const years = estimatedLeft.as('years')
-  if (years > 1) {
-    return pluralize('year', Math.round(years), true)
-  }
-
-  const months = estimatedLeft.as('months')
-  if (months > 1) {
-    return pluralize('month', Math.round(months), true)
-  }
-
-  const days = estimatedLeft.as('days')
-  if (days > 1) {
-    return pluralize('day', Math.round(days), true)
-  }
-
-  const hours = estimatedLeft.as('hours')
-  if (hours > 1) {
-    return pluralize('hour', Math.round(hours), true)
-  }
-
-  const minutes = estimatedLeft.as('minutes')
-  if (minutes > 1) {
-    return pluralize('minute', Math.round(minutes), true)
-  }
-
-  const seconds = estimatedLeft.as('seconds')
-  return pluralize('second', Math.round(seconds), true)
+interface Props {
+  emails: string[]
 }
-
-class App extends PureComponent<{}, State> {
+interface State {
+  googleAuth?: Auth | null
+  error: boolean | string
+  wrongEmail: boolean
+  step: STEPS
+  fetchedMessagesCount: number
+  totalMessagesCount: number
+  listCount: number
+  done: boolean
+}
+class App extends PureComponent<Props, State> {
   public state = {
     googleAuth: null,
     error: false,
+    wrongEmail: false,
     step: STEPS.initial,
     fetchedMessagesCount: 0,
     totalMessagesCount: 0,
@@ -120,6 +86,53 @@ class App extends PureComponent<{}, State> {
   }
 
   public messages: any[] = []
+
+  private callback = {
+    cancel: noop,
+    onAction: ({ action, value }: { action: ACTIONS; value?: any }) => {
+      switch (action) {
+        case ACTIONS.ERROR:
+          if (this.callback.cancel) {
+            this.callback.cancel(ACTIONS.CANCELED_ON_ERROR)
+          }
+          this.setState({ error: value, step: STEPS.initial })
+          break
+        case ACTIONS.START:
+          this.setState({ step: STEPS.fetchLists })
+          break
+        case ACTIONS.LIST_LOADED:
+          this.setState({
+            step: STEPS.fetchLists,
+            listCount: value,
+          })
+          break
+        case ACTIONS.TOTAL_MESSAGES:
+          this.setState({
+            step: STEPS.fetchMessages,
+            totalMessagesCount: value,
+            fetchedMessagesCount: 0,
+          })
+          break
+        case ACTIONS.MESSAGES_LOADED:
+          this.setState({
+            step: STEPS.fetchMessages,
+            fetchedMessagesCount: value,
+          })
+          break
+        case ACTIONS.DONE:
+          this.messages = value
+          this.generateAndUploadFile()
+          break
+
+        case ACTIONS.CANCELED:
+          this.handleChooseAnother()
+          break
+
+        default:
+          break
+      }
+    },
+  }
 
   public async componentDidMount() {
     if (sessionStorage) {
@@ -131,9 +144,12 @@ class App extends PureComponent<{}, State> {
         if (googleAuth) {
           if (isAuthExpired(googleAuth)) {
             sessionStorage.removeItem('google')
+
             this.setState({
               googleAuth: null,
             })
+          } else {
+            this.setState({ googleAuth })
           }
         }
 
@@ -169,12 +185,17 @@ class App extends PureComponent<{}, State> {
 
     sessionStorage.setItem('google', JSON.stringify(googleAuth))
 
+    this.setState({ googleAuth })
+
     this.runWorkflow(googleAuth)
   }
 
-  private handleFailureLogin = (error: any): void => {
-    console.log('handleFailureLogin', error)
+  private handleFailureLogin = () => {
     this.setState({ error: true })
+  }
+
+  private handleChooseAnother = () => {
+    this.handleLogout(false)()
   }
 
   private handleLogout = (done = false) => () => {
@@ -185,6 +206,7 @@ class App extends PureComponent<{}, State> {
       error: false,
       step: STEPS.initial,
       fetchedMessagesCount: 0,
+      wrongEmail: false,
       done,
     })
   }
@@ -222,7 +244,20 @@ class App extends PureComponent<{}, State> {
     this.handleLogout(true)()
   }
 
+  handleCancel = () => {
+    if (this.callback.cancel) {
+      this.callback.cancel(ACTIONS.CANCELED)
+    }
+  }
+
   private async runWorkflow(googleAuth: Auth) {
+    const { emails } = this.props
+
+    if (!emails.includes(googleAuth.email)) {
+      this.setState({ wrongEmail: true })
+      return
+    }
+
     const { step } = this.state
 
     if (step !== STEPS.initial) {
@@ -234,44 +269,31 @@ class App extends PureComponent<{}, State> {
       step: STEPS.connecting,
     })
 
-    await startFetchingMessages(
-      `Bearer ${googleAuth.accessToken}`,
-      ({ action, value }) => {
-        switch (action) {
-          case ACTIONS.ERROR:
-            this.setState({ error: true })
-            break
-          case ACTIONS.START:
-            this.setState({ step: STEPS.fetchLists })
-            break
-          case ACTIONS.LIST_LOADED:
-            this.setState({
-              step: STEPS.fetchLists,
-              listCount: value,
-            })
-            break
-          case ACTIONS.TOTAL_MESSAGES:
-            this.setState({
-              step: STEPS.fetchMessages,
-              totalMessagesCount: value,
-              fetchedMessagesCount: 0,
-            })
-            break
-          case ACTIONS.MESSAGES_LOADED:
-            this.setState({
-              step: STEPS.fetchMessages,
-              fetchedMessagesCount: value,
-            })
-            break
-          case ACTIONS.DONE:
-            this.messages = value
-            this.generateAndUploadFile()
-            break
+    await startFetchingMessages({
+      token: `Bearer ${googleAuth.accessToken}`,
+      callback: this.callback,
+    })
+  }
 
-          default:
-            break
-        }
-      },
+  private renderLoading = (children: any) => {
+    const { step } = this.state
+
+    return (
+      <Loading>
+        <Image alt="loader" mb={4} src="/static/loader.svg" /> {children}
+        {CANCELABLE_STEPS.includes(step) && (
+          <Button
+            bg="white"
+            color="#364152"
+            fontSize={12}
+            mt={3}
+            type="button"
+            onClick={this.handleCancel}
+          >
+            Cancel
+          </Button>
+        )}
+      </Loading>
     )
   }
 
@@ -290,16 +312,16 @@ class App extends PureComponent<{}, State> {
 
     switch (step) {
       case STEPS.connecting:
-        return renderLoading(`Connecting GMail API...`)
+        return this.renderLoading(`Connecting GMail API...`)
       case STEPS.fetchLists:
-        return renderLoading(
+        return this.renderLoading(
           `Fetching lists of messages for "${get(
             googleAuth,
             'email',
           )}. Lists fetched: ${listCount}`,
         )
       case STEPS.fetchMessages:
-        return renderLoading(
+        return this.renderLoading(
           <Box
             color="#ffffff"
             fontSize="16px"
@@ -351,26 +373,39 @@ class App extends PureComponent<{}, State> {
           </Box>,
         )
       case STEPS.signingFile:
-        return renderLoading(`Signing metadata file to upload...`)
+        return this.renderLoading(`Signing metadata file to upload...`)
       case STEPS.uploadingFile:
-        return renderLoading(`Uploading metadata file...`)
+        return this.renderLoading(`Uploading metadata file...`)
       case STEPS.notifyApp:
-        return renderLoading(`Notify application about upload...`)
+        return this.renderLoading(`Notify application about upload...`)
       default:
         return null
     }
   }
 
   public render() {
-    const { googleAuth, error, done } = this.state
+    const { emails } = this.props
+    const { googleAuth, wrongEmail, error, done } = this.state
 
+    if (error) {
+      return <Error error={error} />
+    }
+    if (wrongEmail) {
+      return (
+        <WrongEmail
+          email={get(googleAuth, 'email') || ''}
+          emails={emails}
+          onChooseAnother={this.handleChooseAnother}
+        />
+      )
+    }
     if (done) {
       return <Done error={error} />
     }
 
     return (
       <>
-        {error && <Box>Error occured</Box>}
+        {error && <Box>Error occurred</Box>}
         {googleAuth ? (
           <>
             <Overlay>{this.renderStatus()}</Overlay>

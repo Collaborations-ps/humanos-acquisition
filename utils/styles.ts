@@ -208,3 +208,18 @@ export const Progress = styled.div<ProgressProps>`
     transition: all 1s ease-out;
   }
 `
+
+export const ErrorBlock = styled(Text)`
+  text-align: center;
+
+  code {
+    margin-top: 4px;
+    display: block;
+    background-color: #efefef;
+    border-radius: 4px;
+    border: 1px solid #999;
+    padding: 8px 16px;
+    color: #364152;
+    max-width: 320px;
+  }
+`
