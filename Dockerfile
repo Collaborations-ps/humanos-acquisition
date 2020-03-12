@@ -19,6 +19,7 @@ COPY --from=node_cache /cache/ .
 COPY pages ./pages/
 COPY utils ./utils/
 COPY public ./public/
+COPY components ./components/
 COPY next.config.js ./next.config.js
 COPY tsconfig.json ./tsconfig.json
 COPY next-env.d.ts ./next-env.d.ts
