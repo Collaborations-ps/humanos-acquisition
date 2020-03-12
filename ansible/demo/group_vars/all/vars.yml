@@ -1,5 +1,5 @@
 env: demo
-node_env: produciton
+node_env: production
 port: 80
 api_host: https://api.demo.humanos.c8.ai
 web_url: https://demo.humanos.c8.ai

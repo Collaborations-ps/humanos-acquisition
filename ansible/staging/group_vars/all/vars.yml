@@ -1,5 +1,5 @@
 env: staging
-node_env: produciton
+node_env: production
 port: 80
 api_host: https://api.humanos.c8.ai
 web_url: https://humanos.c8.ai

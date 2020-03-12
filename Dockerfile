@@ -28,4 +28,4 @@ RUN yarn build
 
 EXPOSE 80
 
-CMD ["yarn", "serve"]
+CMD yarn serve -p 80
