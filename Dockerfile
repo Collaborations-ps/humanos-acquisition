@@ -14,6 +14,21 @@ FROM node:dubnium-alpine
 
 WORKDIR /app
 
+ARG NODE_ENV=production
+ENV NODE_ENV ${node_env}
+
+ARG api_host
+ENV API_HOST ${api_host}
+
+ARG web_url
+ENV WEB_URL ${web_url}
+
+ARG google_client_id
+ENV GOOGLE_CLIENT_ID ${google_client_id}
+
+ARG sentry_dsn
+ENV SENTRY_DSN ${sentry_dsn}
+
 COPY --from=node_cache /cache/ .
 
 COPY pages ./pages/
