@@ -1,5 +1,5 @@
 import React from 'react'
-import App, { AppContext } from 'next/app'
+import App from 'next/app'
 import Head from 'next/head'
 import { Global } from '@emotion/core'
 import * as Sentry from '@sentry/browser'
@@ -18,23 +18,16 @@ export default class AcquisitionApp extends App {
   public state = {
     loaded: false,
     authorized: false,
-  }
-
-  public static async getInitialProps({ Component, ctx }: AppContext) {
-    let pageProps = {}
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx)
-    }
-
-    return { pageProps }
+    emails: [],
   }
 
   public async componentDidMount() {
     const authorized = await Api.checkAuthorized()
+    const emails = await Api.getMyEmails()
 
     this.setState({
       authorized,
+      emails,
       loaded: true,
     })
   }
@@ -53,7 +46,7 @@ export default class AcquisitionApp extends App {
 
   public render() {
     const { Component, pageProps } = this.props
-    const { authorized } = this.state
+    const { authorized, emails } = this.state
 
     return (
       <>
@@ -77,7 +70,7 @@ export default class AcquisitionApp extends App {
             &nbsp;&nbsp;|&nbsp;&nbsp;<span>Gmail Acquisition</span>
           </Logo>
           {authorized ? (
-            <Component {...pageProps} />
+            <Component {...pageProps} emails={emails} />
           ) : (
             this.renderNotAuthorized()
           )}

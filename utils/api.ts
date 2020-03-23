@@ -27,6 +27,7 @@ axiosWithRefresh.interceptors.response.use(
 )
 
 async function checkAuthorized(): Promise<boolean> {
+  // TODO: should store refreshed access token
   try {
     const response = await axiosWithRefresh.get(
       `${publicRuntimeConfig.API_HOST}/private/checkAuth`,
@@ -38,6 +39,27 @@ async function checkAuthorized(): Promise<boolean> {
     const data = get(response, 'data', { ok: false })
 
     return data.ok
+  } catch (e) {
+    return false
+  }
+}
+
+async function getMyEmails(): Promise<boolean | string[]> {
+  try {
+    const response = await axiosWithRefresh.get(
+      `${publicRuntimeConfig.API_HOST}/private/getMyEmails`,
+      {
+        headers: getAuthHeaders(),
+      },
+    )
+
+    const data = get(response, 'data', { ok: false })
+
+    if (data.ok) {
+      return data.emails
+    }
+
+    return false
   } catch (e) {
     return false
   }
@@ -61,16 +83,18 @@ async function signGmailPackage({
   name,
   contentType,
   size,
+  email,
 }: {
   name: string
   contentType: string
   size: number
+  email: string
 }): Promise<{ id: string; s3Url: string } | boolean> {
   const response = await axiosWithRefresh.get(
     `${publicRuntimeConfig.API_HOST}/private/signGmailPackage`,
     {
       headers: getAuthHeaders(),
-      params: { name, contentType, size },
+      params: { name, contentType, size, email },
     },
   )
 
@@ -90,4 +114,5 @@ export default {
   checkAuthorized,
   signGmailPackage,
   sendNotification,
+  getMyEmails,
 }
