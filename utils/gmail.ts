@@ -1,5 +1,6 @@
 import axios, { Canceler, CancelToken } from 'axios'
-import nanoid from 'nanoid'
+import { nanoid } from 'nanoid'
+import addressparser from 'addressparser'
 
 import map from 'lodash/map'
 import get from 'lodash/get'
@@ -42,11 +43,11 @@ function parseMessage(message: any) {
   return {
     id: get(message, 'id'),
     threadId: get(message, 'threadId'),
-    from: get(headers, 'From.value'),
-    to: get(headers, 'To.value'),
     date: get(headers, 'Date.value'),
-    cc: get(headers, 'Cc.value'),
-    bcc: get(headers, 'Bcc.value'),
+    from: addressparser(get(headers, 'From.value') || ''),
+    to: addressparser(get(headers, 'To.value') || ''),
+    cc: addressparser(get(headers, 'Cc.value') || ''),
+    bcc: addressparser(get(headers, 'Bcc.value') || ''),
   }
 }
 
