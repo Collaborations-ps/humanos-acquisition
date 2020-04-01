@@ -62,7 +62,7 @@ function Information({
               To
             </Text>
             <Text color="#364152" fontSize={['10px', '12px']}>
-              Cc Bcc
+              Cc
             </Text>
           </Flex>
           <Box bg="#e3e3e6" height="1px" width="100%" />
@@ -76,32 +76,25 @@ function Information({
           </Flex>
         </Flex>
         <DescriptionText fontSize={['12px', '16px']} mt={[3, 4]}>
-          <Bold>
-            THIS INFORMATION IS CRITICAL
-            <br />
-            TO UNDERSTANDING YOUR NETWORK AND HELP YOU SUCCEED.
-          </Bold>
+          <Bold>THIS INFORMATION IS CRITICAL TO HELP YOU SUCCEED</Bold>
           <br /> <br />
           We have published open source version of{' '}
           <a
-            href="https://github.com/Collaborations-ps/humanos-acquisition/blob/master/server/services/socket.js#L45"
+            href="https://github.com/Collaborations-ps/humanos-acquisition/"
             rel="noopener noreferrer"
             target="_blank"
           >
             our code
           </a>{' '}
-          to prove
-          <br />
-          <Accent>we will never touch the content of your email</Accent> (that’s
-          Google and Microsoft’s job)
+          to prove{' '}
+          <Accent>we will never touch the content of your email.</Accent>
           <br /> <br />
           We know it is worth it, we hope you will trust us to help you improve
           your impact.
           <br /> <br />
           <Bolder>Yes, it’s a little scary, but</Bolder> <br />
           - You remain in control <br />
-          - Turn it off anytime <br />- The Mail program on your phone and
-          computer uses the same technology
+          - Turn it off anytime
           <br /> <br />
         </DescriptionText>
         <Flex justifyContent="space-between" my={3}>

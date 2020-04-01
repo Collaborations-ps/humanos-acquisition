@@ -47,7 +47,6 @@ function parseMessage(message: any) {
     from: addressparser(get(headers, 'From.value') || ''),
     to: addressparser(get(headers, 'To.value') || ''),
     cc: addressparser(get(headers, 'Cc.value') || ''),
-    bcc: addressparser(get(headers, 'Bcc.value') || ''),
   }
 }
 
@@ -83,6 +82,7 @@ export function makeBatchMessagesBody({
 }
 
 let listsCount = 0
+let messagesCount = 0
 
 interface GetList {
   callback: ActionCallback
@@ -118,7 +118,10 @@ async function getList({
 
       callback.onAction({
         action: ACTIONS.LIST_LOADED,
-        value: listsCount += 1,
+        value: {
+          listsCount: listsCount += 1,
+          messagesCount: messagesCount += list.messages.length,
+        },
       })
 
       if (list.nextPageToken) {
@@ -200,6 +203,7 @@ export default async function startFetchingMessages({
     callback.onAction({ action: ACTIONS.START })
 
     listsCount = 0
+    messagesCount = 0
     const allMessageIds = await getList({
       callback,
       cancelToken: source.token,

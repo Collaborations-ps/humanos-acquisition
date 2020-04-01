@@ -70,7 +70,7 @@ interface State {
   step: STEPS
   fetchedMessagesCount: number
   totalMessagesCount: number
-  listCount: number
+  messagesCount: number
   done: boolean
 }
 class App extends PureComponent<Props, State> {
@@ -81,7 +81,7 @@ class App extends PureComponent<Props, State> {
     step: STEPS.initial,
     fetchedMessagesCount: 0,
     totalMessagesCount: 0,
-    listCount: 0,
+    messagesCount: 0,
     done: false,
   }
 
@@ -103,7 +103,7 @@ class App extends PureComponent<Props, State> {
         case ACTIONS.LIST_LOADED:
           this.setState({
             step: STEPS.fetchLists,
-            listCount: value,
+            messagesCount: value.messagesCount,
           })
           break
         case ACTIONS.TOTAL_MESSAGES:
@@ -300,8 +300,7 @@ class App extends PureComponent<Props, State> {
   private renderStatus() {
     const {
       step,
-      googleAuth,
-      listCount,
+      messagesCount,
       fetchedMessagesCount,
       totalMessagesCount,
     } = this.state
@@ -315,10 +314,10 @@ class App extends PureComponent<Props, State> {
         return this.renderLoading(`Connecting GMail API...`)
       case STEPS.fetchLists:
         return this.renderLoading(
-          `Fetching lists of messages for "${get(
-            googleAuth,
-            'email',
-          )}. Lists fetched: ${listCount}`,
+          <>
+            We are counting the total number of messages: {messagesCount}.<br />
+            This will enable us to complete the analysis of To/From your Inbox.
+          </>,
         )
       case STEPS.fetchMessages:
         return this.renderLoading(
@@ -345,7 +344,7 @@ class App extends PureComponent<Props, State> {
                   To
                 </Text>
                 <Text color="#364152" fontSize={['10px', '12px']}>
-                  Cc Bcc Date
+                  Cc
                 </Text>
               </Flex>
               <Box bg="#e3e3e6" height="1px" width="100%" />
@@ -358,6 +357,10 @@ class App extends PureComponent<Props, State> {
                 </Text>
               </Flex>
             </Flex>
+            You can review Google’s & Collaboration.Ai’s Privacy policies at any
+            time.
+            <br />
+            <br />
             Please do not leave this page while we are processing your To/From
             data.
             <Box mt={3} width={1}>
