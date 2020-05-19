@@ -7,8 +7,8 @@ import map from 'lodash/map'
 
 import forEachPromise from '../../utils/forEachPromise'
 
-import { authorize, fetchMSGraph, ENDPOINTS } from './service'
-import { reducer, initialState, actionTypes } from './reducer'
+import { authorize, fetchMSGraph, ENDPOINTS } from '../../utils/microsoft-teams/service'
+import { reducer, initialState, actionTypes } from '../../utils/microsoft-teams/reducer'
 
 export default function MicrosoftTeamsPage() {
   const [state, dispatch] = useReducer(reducer, initialState)
