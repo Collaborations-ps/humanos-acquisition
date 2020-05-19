@@ -17,7 +17,7 @@ function getMsal() {
         authority: AUTHORITY,
         redirectUri: REDIRECT_URI,
         validateAuthority: true,
-        postLogoutRedirectUri: 'http://localhost:3000/microsoft-teams',
+        postLogoutRedirectUri: REDIRECT_URI,
         navigateToLoginRequestUrl: false,
       },
       cache: {
@@ -55,6 +55,7 @@ function doesRequireInteraction(error: any) {
 
 export default async function authorize() {
   const request = {
+    loginHint: 'email',
     scopes,
     prompt: 'select_account',
   }

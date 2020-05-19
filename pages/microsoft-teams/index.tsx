@@ -1,5 +1,4 @@
-import React, { Fragment, useEffect, useReducer } from 'react'
-import Router, { useRouter } from 'next/router'
+import React, { Fragment, useReducer } from 'react'
 import { Box, Button, Text } from 'rebass'
 
 import get from 'lodash/get'
@@ -8,27 +7,20 @@ import map from 'lodash/map'
 
 import forEachPromise from '../../utils/forEachPromise'
 
-// import useHash from '../../hooks/useHash'
-import { authorize } from './actions'
+import { authorize, fetchMSGraph, ENDPOINTS } from './service'
 import { reducer, initialState, actionTypes } from './reducer'
-
-import fetchMSGraph, { ENDPOINTS } from './fetchMSGraph'
 
 export default function MicrosoftTeamsPage() {
   const [state, dispatch] = useReducer(reducer, initialState)
-
-  useEffect(() => {
-    // TODO: Do we need something?
-  }, [])
 
   const fetchMessages = async () => {
     try {
       dispatch({ type: actionTypes.FETCH_START })
       const { accessToken } = await authorize()
+      // TODO: Replace this interaction in future for big amounts of data
       const groups = await fetchMSGraph(ENDPOINTS.MEMBER_OF, accessToken)
       const groupIds = map(groups.value, 'id')
       console.log('Groups', groups)
-      // TODO: Replace this interaction in future for big amounts of data
       await forEachPromise(groupIds, async groupId => {
         const channels = await fetchMSGraph(ENDPOINTS.CHANNELS(groupId), accessToken)
         console.log('Channels', channels)
@@ -41,6 +33,7 @@ export default function MicrosoftTeamsPage() {
       })
       dispatch({ type: actionTypes.FETCH_SUCCESS })
     } catch (error) {
+      console.log('ERROR', error)
       dispatch({ type: actionTypes.ERROR, error })
     }
   }
