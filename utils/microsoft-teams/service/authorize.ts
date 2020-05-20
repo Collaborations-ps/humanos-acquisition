@@ -1,23 +1,18 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import { UserAgentApplication, Logger } from 'msal'
-
-// TODO: Move these values to config
-const CLIENT_ID = 'a534fba4-fa50-48fc-91f9-104352b86625'
-const AUTHORITY = 'https://login.microsoftonline.com/common'
-const REDIRECT_URI = 'http://localhost:3000/microsoft-teams'
-const scopes = ['User.Read', 'Group.Read.All']
+import { publicRuntimeConfig } from '../../config'
 
 let msal: UserAgentApplication
 function getMsal() {
   if (!msal) {
     msal = new UserAgentApplication({
       auth: {
-        clientId: CLIENT_ID,
-        authority: AUTHORITY,
-        redirectUri: REDIRECT_URI,
+        clientId: publicRuntimeConfig.MICROSOFT_TEAMS_CLIENT_ID,
+        authority: publicRuntimeConfig.MICROSOFT_TEAMS_AUTHORITY,
+        redirectUri: publicRuntimeConfig.MICROSOFT_TEAMS_REDIRECT_URI,
         validateAuthority: true,
-        postLogoutRedirectUri: REDIRECT_URI,
+        postLogoutRedirectUri: publicRuntimeConfig.MICROSOFT_TEAMS_REDIRECT_URI,
         navigateToLoginRequestUrl: false,
       },
       cache: {
@@ -56,7 +51,7 @@ function doesRequireInteraction(error: any) {
 export default async function authorize() {
   const request = {
     loginHint: 'email',
-    scopes,
+    scopes: ['User.Read', 'Group.Read.All'],
     prompt: 'select_account',
   }
   let tokenResponse: any
