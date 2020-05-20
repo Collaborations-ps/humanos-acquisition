@@ -51,6 +51,7 @@ export default function MicrosoftTeamsPage() {
         my={0}
         type="button"
         onClick={fetchMessages}
+        disabled={state.isFetching}
       >
         Fetch Messages
       </Button>
