@@ -1,8 +1,11 @@
 import React, { Fragment, useReducer } from 'react'
-import { Box, Button, Text, Card } from 'rebass'
+import { Box, Button, Flex, Text } from 'rebass'
 
 import map from 'lodash/map'
 
+import Information from '../../components/Information'
+
+import { handleGoToApp } from '../../utils'
 import { fetchMessages } from '../../utils/microsoft-teams/actions'
 import { reducer, initialState } from '../../utils/microsoft-teams/reducer'
 
@@ -14,41 +17,52 @@ export default function MicrosoftTeamsPage() {
   }
 
   return (
-    <Card
-      bg="#ffffff"
-      color="#364152"
-      mb={3}
-      mt={5}
-      p="24px"
-      sx={{
-        borderRadius: '8px',
-        maxWidth: '788px',
-      }}
-      width={['auto', 'auto', '788px']}
-    >
-      <Button
-        bg="#449aff"
-        color="#ffffff"
-        mx={0}
-        mb={1}
-        type="button"
-        onClick={() => fetchMessages(dispatch)}
-        disabled={state.isFetching}
-      >
-        Fetch Messages
-      </Button>
-      <Box
-        sx={{
-          overflowY: 'scroll',
-          height: '8em',
-          border: '1px solid #cececece',
-          borderRadius: '3px',
-        }}
-      >
-        {map(state.fetchLog, (logText, index) => (
-          <Text key={index}>{logText}</Text>
-        ))}
-      </Box>
-    </Card>
+    <Fragment>
+      <Information>
+        <Flex
+          bg="#fafbfd"
+          flexDirection="row"
+          justifyContent="space-between"
+          mb={1}
+          mt={3}
+          px={3}
+          py={2}
+          sx={{
+            borderRadius: '8px',
+            border: '1px solid #e3e3e6',
+          }}
+        >
+          <Text color="#364152" fontSize={['10px', '12px']}>
+            Channel Message Sender
+          </Text>
+          <Text color="#364152" fontSize={['10px', '12px']}>
+            Channel Message Mentions
+          </Text>
+        </Flex>
+      </Information>
+      <Flex mt={2}>
+        <Button
+          bg="#449aff"
+          color="#ffffff"
+          mx={2}
+          my={0}
+          type="button"
+          onClick={handleGoToApp}
+        >
+          Go to Dashboard
+        </Button>
+        <Button
+          bg="#449aff"
+          color="#ffffff"
+          mx={2}
+          my={0}
+          type="button"
+          onClick={() => fetchMessages(dispatch)}
+          disabled={state.isFetching}
+        >
+          Fetch Messages
+        </Button>
+      </Flex>
+    </Fragment>
   );
 }
