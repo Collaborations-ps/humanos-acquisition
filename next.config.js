@@ -10,5 +10,9 @@ module.exports = withImages({
     MICROSOFT_TEAMS_CLIENT_ID: process.env.MICROSOFT_TEAMS_CLIENT_ID,
     MICROSOFT_TEAMS_AUTHORITY: process.env.MICROSOFT_TEAMS_AUTHORITY,
     MICROSOFT_TEAMS_REDIRECT_URI: process.env.MICROSOFT_TEAMS_REDIRECT_URI,
+    REPO_URL: 'https://github.com/Collaborations-ps/humanos-acquisition/',
+    EMAIL: 'info@collaboration.ai',
+    PHONE: '+16517607717',
+    TERMS_URL: 'https://www.collaboration.ai/terms.html',
   },
 })
