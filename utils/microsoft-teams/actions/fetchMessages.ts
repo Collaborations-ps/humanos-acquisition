@@ -1,6 +1,7 @@
 import { Dispatch } from 'react'
 
 import get from 'lodash/get'
+import includes from 'lodash/includes'
 import isEmpty from 'lodash/isEmpty'
 import map from 'lodash/map'
 
@@ -48,67 +49,72 @@ async function* messagesIterator(
   }
 }
 
-async function doFetchMesasges(dispatch: Dispatch<Action>) {
-  // TODO: Replace this interaction in future for big amounts of data
-  dispatch({ type: actionTypes.FETCH_START })
-  dispatch({ type: actionTypes.LOG, payload: 'Waiting for authorization...' })
-  const { accessToken } = await authorize()
-  dispatch({ type: actionTypes.LOG, payload: 'Authorized!' })
-  const groups = await fetchMSGraph(ENDPOINTS.MEMBER_OF, {
-    accessToken,
-    select: ['id'],
-  })
-  const groupIds = map(groups.value, 'id')
-  dispatch({
-    type: actionTypes.LOG,
-    payload: `Fetched ${groupIds.length} teams`,
-  })
+interface FetchMessagesParams {
+  dispatch: Dispatch<Action>
+  emails?: string[]
+}
 
-  dispatch({ type: actionTypes.LOG, payload: 'Fetching channels...' })
-  let channelIds: string[] = []
-  await forEachPromise(groupIds, async groupId => {
-    const channels = await fetchMSGraph(ENDPOINTS.CHANNELS(groupId), {
+export default async function fetchMessages({
+  dispatch,
+  emails,
+}: FetchMessagesParams) {
+  try {
+    dispatch({ type: actionTypes.AUTHORIZE_START })
+    const { accessToken } = await authorize()
+
+    const me = await fetchMSGraph(ENDPOINTS.ME, {
+      accessToken,
+      select: ['userPrincipalName'],
+    })
+
+    if (!includes(emails, me.userPrincipalName)) {
+      dispatch({ type: actionTypes.WRONG_EMAIL, payload: me.userPrincipalName })
+      return
+    }
+
+    dispatch({ type: actionTypes.GROUPS_FETCH_START })
+    const groups = await fetchMSGraph(ENDPOINTS.MEMBER_OF, {
       accessToken,
       select: ['id'],
     })
-    if (!channels || isEmpty(channels.value)) {
-      return
-    }
-    const newChannelIds: string[] = map(channels.value, 'id')
-    channelIds = [...channelIds, ...newChannelIds]
+    const groupIds = map(groups.value, 'id')
+
     dispatch({
-      type: actionTypes.LOG,
-      payload: `Fetched ${newChannelIds.length} channels`,
+      type: actionTypes.GROUPS_FETCH_SUCCESS,
+      payload: groupIds.length,
     })
-  })
-  dispatch({
-    type: actionTypes.LOG,
-    payload: `Successfully fetched ${channelIds.length} channels!`,
-  })
 
-  dispatch({ type: actionTypes.LOG, payload: 'Fetching messages...' })
-  await forEachPromise(groupIds, async groupId => {
-    await forEachPromise(channelIds, async channelId => {
-      const iterator = messagesIterator(groupId, channelId, accessToken)
-
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const messages of iterator) {
-        console.log('MESSAGES', messages)
-        dispatch({ type: actionTypes.NEW_MESSAGES, payload: messages })
-        dispatch({
-          type: actionTypes.LOG,
-          payload: `Fetched ${messages.length} messages`,
-        })
-      }
+    dispatch({ type: actionTypes.CHANNELS_FETCH_START })
+    const channelIds: string[] = []
+    await forEachPromise(groupIds, async groupId => {
+      const channels = await fetchMSGraph(ENDPOINTS.CHANNELS(groupId), {
+        accessToken,
+        select: ['id'],
+      })
+      channelIds.push(...map(channels.value, 'id'))
     })
-  })
 
-  dispatch({ type: actionTypes.FETCH_SUCCESS })
-}
+    dispatch({
+      type: actionTypes.CHANNELS_FETCH_SUCCESS,
+      payload: channelIds.length,
+    })
 
-export default async function fetchMessages(dispatch: Dispatch<Action>) {
-  try {
-    await doFetchMesasges(dispatch)
+    dispatch({ type: actionTypes.MESSAGES_FETCH_START })
+
+    const messages: any[] = []
+    await forEachPromise(groupIds, async groupId => {
+      await forEachPromise(channelIds, async channelId => {
+        const iterator = messagesIterator(groupId, channelId, accessToken)
+
+        for await (const newMessages of iterator) {
+          messages.push(...newMessages)
+        }
+      })
+    })
+
+    console.log('MESSAGES', messages)
+
+    dispatch({ type: actionTypes.FETCH_SUCCESS })
   } catch (error) {
     console.error(error)
     dispatch({ type: actionTypes.ERROR, error })

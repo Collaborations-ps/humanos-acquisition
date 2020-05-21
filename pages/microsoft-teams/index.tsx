@@ -1,20 +1,73 @@
-import React, { Fragment, useReducer } from 'react'
-import { Button, Flex, Text } from 'rebass'
+import React, { Fragment, useReducer, useCallback } from 'react'
+import { Button, Flex, Image, Text } from 'rebass'
 
+import includes from 'lodash/includes'
 import map from 'lodash/map'
 
-import Information from '../../components/Information'
+import Done from '../../components/Done'
 import Error from '../../components/Error'
+import Information from '../../components/Information'
+import WrongEmail from '../../components/WrongEmail'
 
 import { handleGoToApp } from '../../utils'
 import { fetchMessages } from '../../utils/microsoft-teams/actions'
-import { reducer, initialState } from '../../utils/microsoft-teams/reducer'
+import { reducer, initialState, FetchingStage } from '../../utils/microsoft-teams/reducer'
+import { Loading, Overlay } from '../../utils/styles'
 
-export default function MicrosoftTeamsPage() {
+interface Props {
+  emails?: string[]
+}
+
+function isFetchingStage(fetchingStage: FetchingStage) {
+  return includes([
+    FetchingStage.authorizing,
+    FetchingStage.fetchingGroups,
+    FetchingStage.fetchingChannels,
+    FetchingStage.fetchingMessages,
+  ], fetchingStage)
+}
+
+export default function MicrosoftTeamsPage(props: Props) {
+  // const { emails } = props
+  const emails = ['Brennan.Townley@thedifferencea2c.onmicrosoft.com']
   const [state, dispatch] = useReducer(reducer, initialState)
+
+  const connectData = useCallback(() => {
+    fetchMessages({ dispatch, emails })
+  }, [emails])
 
   if (state.error) {
     return <Error error={state.error.message} />
+  }
+
+  // TODO: Add onChooseAnother
+  if (state.wrongEmail && emails) {
+    return <WrongEmail email={state.wrongEmail} emails={emails} onChooseAnother={connectData} />
+  }
+
+  const isDone = state.fetchingStage === FetchingStage.done
+
+  // TODO: Modify Done component so it doesn't show To/From
+  // Possibly add redirect to success page and stuff ?
+  if (isDone) {
+    return <Done />
+  }
+
+  const isFetching = isFetchingStage(state.fetchingStage)
+
+  // TODO: Add some information about loading state/stage
+  if (isFetching) {
+    return (
+      <Overlay>
+        <Loading>
+          <Image alt="loader" mb={4} src="/static/loader.svg" />
+          {state.fetchingStage === FetchingStage.authorizing ? 'Waiting for authorization...' : null}
+          {state.fetchingStage === FetchingStage.fetchingGroups ? 'Loading teams...' : null}
+          {state.fetchingStage === FetchingStage.fetchingChannels ? `Loading channles for ${state.groupsCount} teams...` : null}
+          {state.fetchingStage === FetchingStage.fetchingMessages ? `Loading messages for ${state.channelsCount} channels in ${state.groupsCount} teams...` : null}
+        </Loading>
+      </Overlay>
+    );
   }
 
   return (
@@ -57,10 +110,10 @@ export default function MicrosoftTeamsPage() {
           mx={2}
           my={0}
           type="button"
-          onClick={() => fetchMessages(dispatch)}
-          disabled={state.isFetching}
+          onClick={connectData}
+          disabled={isFetching}
         >
-          Fetch Messages
+          Connect Data
         </Button>
       </Flex>
     </Fragment>
