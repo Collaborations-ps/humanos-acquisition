@@ -1,9 +1,10 @@
 import React, { Fragment, useReducer } from 'react'
-import { Box, Button, Flex, Text } from 'rebass'
+import { Button, Flex, Text } from 'rebass'
 
 import map from 'lodash/map'
 
 import Information from '../../components/Information'
+import Error from '../../components/Error'
 
 import { handleGoToApp } from '../../utils'
 import { fetchMessages } from '../../utils/microsoft-teams/actions'
@@ -13,7 +14,7 @@ export default function MicrosoftTeamsPage() {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   if (state.error) {
-    return <Box>Error occured!</Box>
+    return <Error error={state.error.message} />
   }
 
   return (
@@ -21,7 +22,6 @@ export default function MicrosoftTeamsPage() {
       <Information>
         <Flex
           bg="#fafbfd"
-          flexDirection="row"
           justifyContent="space-between"
           mb={1}
           mt={3}

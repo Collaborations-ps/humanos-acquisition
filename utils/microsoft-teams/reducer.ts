@@ -1,7 +1,7 @@
 export interface Action {
   type: string
   payload?: any
-  error?: Error | string
+  error?: Error
 }
 
 export const actionTypes = {
@@ -13,7 +13,7 @@ export const actionTypes = {
 }
 
 interface State {
-  error: string | Error | null
+  error: Error | null
   messages: any[]
   fetchLog: string[]
   isFetching: boolean
@@ -29,7 +29,7 @@ export function reducer(state: State, action: Action): State {
   if (action.type === actionTypes.ERROR) {
     return {
       ...state,
-      error: action.error as string,
+      error: action.error as Error,
       isFetching: false,
     }
   }
