@@ -30,6 +30,9 @@
       web_url: '{{ web_url }}'
       google_client_id: '{{ google_client_id }}'
       sentry_dsn: '{{ sentry_dsn }}'
+      microsoft_teams_client_id: '{{ microsoft_teams_client_id }}'
+      microsoft_teams_authority: '{{ microsoft_teams_authority }}'
+      microsoft_teams_redirect_uri: '{{ microsoft_teams_redirect_uri }}'
 
 - name: Print tag
   debug:

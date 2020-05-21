@@ -29,6 +29,15 @@ ENV GOOGLE_CLIENT_ID ${google_client_id}
 ARG sentry_dsn
 ENV SENTRY_DSN ${sentry_dsn}
 
+ARG microsoft_teams_client_id
+ENV MICROSOFT_TEAMS_CLIENT_ID ${microsoft_teams_client_id}
+
+ARG microsoft_teams_authority
+ENV MICROSOFT_TEAMS_AUTHORITY ${microsoft_teams_authority}
+
+ARG microsoft_teams_redirect_uri
+ENV MICROSOFT_TEAMS_REDIRECT_URI ${microsoft_teams_redirect_uri}
+
 COPY --from=node_cache /cache/ .
 
 COPY pages ./pages/
