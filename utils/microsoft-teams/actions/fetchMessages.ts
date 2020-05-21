@@ -15,7 +15,10 @@ async function doFetchMesasges(dispatch: Dispatch<Action>) {
   dispatch({ type: actionTypes.LOG, payload: 'Waiting for authorization...' })
   const { accessToken } = await authorize()
   dispatch({ type: actionTypes.LOG, payload: 'Authorized!' })
-  const groups = await fetchMSGraph(ENDPOINTS.MEMBER_OF, accessToken)
+  const groups = await fetchMSGraph(ENDPOINTS.MEMBER_OF, {
+    accessToken,
+    select: ['id'],
+  })
   const groupIds = map(groups.value, 'id')
   dispatch({
     type: actionTypes.LOG,
@@ -25,10 +28,10 @@ async function doFetchMesasges(dispatch: Dispatch<Action>) {
   dispatch({ type: actionTypes.LOG, payload: 'Fetching channels...' })
   let channelIds: string[] = []
   await forEachPromise(groupIds, async groupId => {
-    const channels = await fetchMSGraph(
-      ENDPOINTS.CHANNELS(groupId),
+    const channels = await fetchMSGraph(ENDPOINTS.CHANNELS(groupId), {
       accessToken,
-    )
+      select: ['id'],
+    })
     if (!channels || isEmpty(channels.value)) {
       return
     }
@@ -49,7 +52,11 @@ async function doFetchMesasges(dispatch: Dispatch<Action>) {
     await forEachPromise(channelIds, async channelId => {
       const messages = await fetchMSGraph(
         ENDPOINTS.CHANNEL_MESSAGES(groupId, channelId),
-        accessToken,
+        {
+          accessToken /* select: ['id', 'from', 'createdDateTime', 'mentions']  */,
+        },
+        // Currently select is not supported for messages
+        // https://docs.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-beta&tabs=http#optional-query-parameters
       )
       if (!messages || isEmpty(messages.value)) {
         return
@@ -58,12 +65,14 @@ async function doFetchMesasges(dispatch: Dispatch<Action>) {
         id: message.id,
         userId: get(message, 'from.user.id'),
         displayName: get(message, 'from.user.displayName'),
+        createdDateTime: get(message, 'createdDateTime'),
         mentions: map(message.mentions, mention => ({
           id: mention.id,
-          userId: get(message, 'mentioned.user.id'),
-          displayName: get(message, 'mentioned.user.displayName'),
+          userId: get(mention, 'mentioned.user.id'),
+          displayName: get(mention, 'mentioned.user.displayName'),
         })),
       }))
+      console.log('MESSAGES', messagesData)
       dispatch({
         type: actionTypes.NEW_MESSAGES,
         payload: messagesData,
