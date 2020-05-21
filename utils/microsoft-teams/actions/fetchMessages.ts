@@ -9,6 +9,45 @@ import forEachPromise from '../../forEachPromise'
 import { authorize, fetchMSGraph, ENDPOINTS } from '../service'
 import { actionTypes, Action } from '../reducer'
 
+function mapMessage(message: any) {
+  return {
+    id: message.id,
+    userId: get(message, 'from.user.id'),
+    displayName: get(message, 'from.user.displayName'),
+    createdDateTime: get(message, 'createdDateTime'),
+    mentions: map(message.mentions, mention => ({
+      id: mention.id,
+      userId: get(mention, 'mentioned.user.id'),
+      displayName: get(mention, 'mentioned.user.displayName'),
+    })),
+  }
+}
+
+async function* messagesIterator(
+  groupId: string,
+  channelId: string,
+  accessToken: string,
+) {
+  let url = ENDPOINTS.CHANNEL_MESSAGES(groupId, channelId)
+
+  while (url) {
+    // eslint-disable-next-line no-await-in-loop
+    const messages = await fetchMSGraph(
+      url,
+      {
+        accessToken /* select: ['id', 'from', 'createdDateTime', 'mentions']  */,
+      },
+      // Currently select is not supported for messages
+      // https://docs.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-beta&tabs=http#optional-query-parameters
+    )
+    if (!messages || isEmpty(messages.value)) {
+      return
+    }
+    yield map(messages.value, mapMessage)
+    url = messages['@odata.nextLink']
+  }
+}
+
 async function doFetchMesasges(dispatch: Dispatch<Action>) {
   // TODO: Replace this interaction in future for big amounts of data
   dispatch({ type: actionTypes.FETCH_START })
@@ -50,37 +89,17 @@ async function doFetchMesasges(dispatch: Dispatch<Action>) {
   dispatch({ type: actionTypes.LOG, payload: 'Fetching messages...' })
   await forEachPromise(groupIds, async groupId => {
     await forEachPromise(channelIds, async channelId => {
-      const messages = await fetchMSGraph(
-        ENDPOINTS.CHANNEL_MESSAGES(groupId, channelId),
-        {
-          accessToken /* select: ['id', 'from', 'createdDateTime', 'mentions']  */,
-        },
-        // Currently select is not supported for messages
-        // https://docs.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-beta&tabs=http#optional-query-parameters
-      )
-      if (!messages || isEmpty(messages.value)) {
-        return
+      const iterator = messagesIterator(groupId, channelId, accessToken)
+
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const messages of iterator) {
+        console.log('MESSAGES', messages)
+        dispatch({ type: actionTypes.NEW_MESSAGES, payload: messages })
+        dispatch({
+          type: actionTypes.LOG,
+          payload: `Fetched ${messages.length} messages`,
+        })
       }
-      const messagesData = map(messages.value, message => ({
-        id: message.id,
-        userId: get(message, 'from.user.id'),
-        displayName: get(message, 'from.user.displayName'),
-        createdDateTime: get(message, 'createdDateTime'),
-        mentions: map(message.mentions, mention => ({
-          id: mention.id,
-          userId: get(mention, 'mentioned.user.id'),
-          displayName: get(mention, 'mentioned.user.displayName'),
-        })),
-      }))
-      console.log('MESSAGES', messagesData)
-      dispatch({
-        type: actionTypes.NEW_MESSAGES,
-        payload: messagesData,
-      })
-      dispatch({
-        type: actionTypes.LOG,
-        payload: `Fetched ${messages.value.length} messages`,
-      })
     })
   })
 

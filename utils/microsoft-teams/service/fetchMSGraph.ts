@@ -18,8 +18,15 @@ export const ENDPOINTS = {
 export default async function fetchMSGraph(endpoint: string, options: Options) {
   const select = (options.select || []).join(',')
   const expand = (options.expand || []).join(',')
-  const query = qs.stringify({ $select: select, $expand: expand })
-  const url = `${endpoint}${query ? '?' : ''}${query || ''}`
+
+  const query =
+    select || expand ? qs.stringify({ $select: select, $expand: expand }) : ''
+
+  const url =
+    endpoint.indexOf('?') > -1
+      ? endpoint
+      : `${endpoint}${query ? '?' : ''}${query}`
+
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${options.accessToken}`,
