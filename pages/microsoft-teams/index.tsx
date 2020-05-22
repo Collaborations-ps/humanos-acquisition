@@ -10,7 +10,7 @@ import Information from '../../components/Information'
 import WrongEmail from '../../components/WrongEmail'
 
 import { handleGoToApp } from '../../utils'
-import { fetchMessages } from '../../utils/microsoft-teams/actions'
+import { fetchMessages, chooseAnotherAccount } from '../../utils/microsoft-teams/actions'
 import { reducer, initialState, FetchingStage } from '../../utils/microsoft-teams/reducer'
 import { Loading, Overlay } from '../../utils/styles'
 
@@ -36,13 +36,16 @@ export default function MicrosoftTeamsPage(props: Props) {
     fetchMessages({ dispatch, emails })
   }, [emails])
 
+  const onChooseAnother = useCallback(() => {
+    chooseAnotherAccount({ dispatch, emails })
+  }, [emails])
+
   if (state.error) {
     return <Error error={state.error.message} />
   }
 
-  // TODO: Add onChooseAnother
   if (state.wrongEmail && emails) {
-    return <WrongEmail email={state.wrongEmail} emails={emails} onChooseAnother={connectData} />
+    return <WrongEmail email={state.wrongEmail} emails={emails} onChooseAnother={onChooseAnother} />
   }
 
   const isDone = state.fetchingStage === FetchingStage.done
@@ -50,12 +53,11 @@ export default function MicrosoftTeamsPage(props: Props) {
   // TODO: Modify Done component so it doesn't show To/From
   // Possibly add redirect to success page and stuff ?
   if (isDone) {
-    return <Done />
+    return <Done infoText="Channels" />
   }
 
   const isFetching = isFetchingStage(state.fetchingStage)
 
-  // TODO: Add some information about loading state/stage
   if (isFetching) {
     return (
       <Overlay>

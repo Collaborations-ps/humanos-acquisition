@@ -405,7 +405,7 @@ class App extends PureComponent<Props, State> {
       )
     }
     if (done) {
-      return <Done error={error} />
+      return <Done error={error} infoText="To/From" />
     }
 
     return (
