@@ -28,8 +28,7 @@ function isFetchingStage(fetchingStage: FetchingStage) {
 }
 
 export default function MicrosoftTeamsPage(props: Props) {
-  // const { emails } = props
-  const emails = ['Brennan.Townley@thedifferencea2c.onmicrosoft.com']
+  const { emails } = props
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const connectData = useCallback(() => {
