@@ -1,3 +1,4 @@
+import chooseAnotherAccount from './chooseAnotherAccount'
 import fetchMessages from './fetchMessages'
 
-export { fetchMessages }
+export { chooseAnotherAccount, fetchMessages }
