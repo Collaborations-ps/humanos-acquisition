@@ -6,7 +6,12 @@ import { Upload } from '../utils/styles'
 
 import { handleGoToApp } from '../utils'
 
-function Done({ error }: { error?: string | boolean }) {
+interface DoneProps {
+  infoText: string
+  error?: string | boolean
+}
+
+function Done({ error, infoText }: DoneProps) {
   return (
     <>
       {error && <Box>Error occured</Box>}
@@ -25,7 +30,7 @@ function Done({ error }: { error?: string | boolean }) {
             py="4px"
             sx={{ borderRadius: '4px', display: 'inline' }}
           >
-            To/From
+            {infoText}
           </Box>{' '}
           information has been uploaded to our secure Amazon servers where it is
           being processed for helping you and your network. <br /> <br />
@@ -51,10 +56,12 @@ function Done({ error }: { error?: string | boolean }) {
 
 Done.defaultProps = {
   error: null,
+  infoText: 'Third party',
 }
 
 Done.propTypes = {
   error: PropTypes.bool,
+  infoText: PropTypes.string
 }
 
 export default Done

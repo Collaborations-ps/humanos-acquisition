@@ -12,7 +12,7 @@ function handleRefresh() {
   }
 }
 
-function Error({ error }: { error?: string | boolean }) {
+export default function Error({ error }: { error?: string | boolean }) {
   return (
     <Upload>
       <Text lineHeight="1.5">
@@ -59,5 +59,3 @@ Error.defaultProps = {
 Error.propTypes = {
   error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
 }
-
-export default Error

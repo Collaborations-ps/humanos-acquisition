@@ -5,6 +5,9 @@ api_host: https://api.os.collaboration.ai
 web_url: https://os.collaboration.ai
 google_client_id: 331673999257-gokigfmrog0j1eucknqrk2eiglcd7p91.apps.googleusercontent.com
 sentry_dsn: https://ea19810535124b5784d374afbb9e7e90@sentry.io/1731689
+microsoft_teams_client_id: a534fba4-fa50-48fc-91f9-104352b86625
+microsoft_teams_authority: https://login.microsoftonline.com/common
+microsoft_teams_redirect_uri: https://acquisition.os.collaboration.ai/microsoft-teams
 aws_region: us-west-2
 cluster: humanos-prod
 acquisition_image_name: humanos-acquisition
