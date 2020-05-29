@@ -1,7 +1,8 @@
 import { Dispatch } from 'react'
 
+import { Application, logout } from '../../../services/microsoft'
+
 import { Action } from '../reducer'
-import { logout } from '../service'
 
 import fetchMessages from './fetchMessages'
 
@@ -14,6 +15,6 @@ export default async function chooseAnotherAccount({
   dispatch,
   emails,
 }: ChooseAnotherAccountParams) {
-  await logout()
+  await logout(Application.teams)
   await fetchMessages({ dispatch, emails })
 }
