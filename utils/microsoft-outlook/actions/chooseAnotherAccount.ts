@@ -15,6 +15,6 @@ export default async function chooseAnotherAccount({
   dispatch,
   emails,
 }: ChooseAnotherAccountParams) {
-  await logout(Application.teams)
+  await logout(Application.outlook)
   await fetchMessages({ dispatch, emails })
 }

@@ -7,7 +7,13 @@ import map from 'lodash/map'
 
 import forEachPromise from '../../forEachPromise'
 
-import { authorize, fetchMSGraph, ENDPOINTS } from '../service'
+import {
+  Application,
+  authorize,
+  ENDPOINTS,
+  fetchMSGraph,
+} from '../../../services/microsoft'
+
 import { actionTypes, Action } from '../reducer'
 
 function mapMessage(message: any) {
@@ -59,8 +65,14 @@ export default async function fetchMessages({
   emails,
 }: FetchMessagesParams) {
   try {
+    if (!emails || isEmpty(emails)) {
+      throw new Error('No emails')
+    }
     dispatch({ type: actionTypes.AUTHORIZE_START })
-    const { accessToken } = await authorize()
+    const { accessToken } = await authorize({
+      application: Application.teams,
+      email: emails[0],
+    })
 
     const me = await fetchMSGraph(ENDPOINTS.ME, {
       accessToken,

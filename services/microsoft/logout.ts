@@ -1,11 +1,13 @@
 import getMsal from './getMsal'
 
-export default async function logout() {
+import Application from './Application'
+
+export default async function logout(application: Application) {
   // TODO: Microsoft doesn't support "silent logout
   // https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/113
   // https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/1386
 
-  const msalApp = getMsal()
+  const msalApp = getMsal(application)
   // @ts-ignore
   msalApp.clearCache()
   // @ts-ignore
