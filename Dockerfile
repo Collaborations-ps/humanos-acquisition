@@ -42,6 +42,7 @@ COPY --from=node_cache /cache/ .
 
 COPY pages ./pages/
 COPY utils ./utils/
+COPY services ./services/
 COPY public ./public/
 COPY components ./components/
 COPY next.config.js ./next.config.js
