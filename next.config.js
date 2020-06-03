@@ -1,4 +1,5 @@
 require('@startupcraft/dotenv-config')
+
 const withImages = require('next-images')
 
 module.exports = withImages({
@@ -14,5 +15,9 @@ module.exports = withImages({
     EMAIL: 'info@collaboration.ai',
     PHONE: '+16517607717',
     TERMS_URL: 'https://www.collaboration.ai/terms.html',
+  },
+  serverRuntimeConfig: {
+    ZOOM_CLIENT_ID: process.env.ZOOM_CLIENT_ID,
+    ZOOM_CLIENT_SECRET: process.env.ZOOM_CLIENT_SECRET,
   },
 })
