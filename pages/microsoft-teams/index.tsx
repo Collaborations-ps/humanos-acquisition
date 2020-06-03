@@ -49,8 +49,6 @@ export default function MicrosoftTeamsPage(props: Props) {
 
   const isDone = state.fetchingStage === FetchingStage.done
 
-  // TODO: Modify Done component so it doesn't show To/From
-  // Possibly add redirect to success page and stuff ?
   if (isDone) {
     return <Done infoText="Channels" />
   }
