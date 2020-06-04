@@ -4,7 +4,7 @@ import qs from 'qs'
 import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import { serverRuntimeConfig } from '../../../utils/config'
+import { publicRuntimeConfig, serverRuntimeConfig } from '../../../utils/config'
 
 const AUTHORIZE_URL = 'https://zoom.us/oauth/authorize'
 const TOKEN_URL = 'https://zoom.us/oauth/token'
@@ -23,7 +23,7 @@ export default async function zoomHandler(
     const tokenQuery = qs.stringify({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: 'http://localhost:3000/api/zoom',
+      redirect_uri: `${publicRuntimeConfig.WEB_URL}/api/zoom`,
     })
 
     try {
@@ -37,7 +37,7 @@ export default async function zoomHandler(
       res.status(302)
       res.setHeader(
         'Location',
-        `http://localhost:3000/zoom?token=${tokenResponse.data.access_token}`,
+        `${publicRuntimeConfig.WEB_URL}/zoom?token=${tokenResponse.data.access_token}`,
       )
       res.end()
       return
@@ -51,7 +51,7 @@ export default async function zoomHandler(
   const authorizeQuery = qs.stringify({
     response_type: 'code',
     client_id: serverRuntimeConfig.ZOOM_CLIENT_ID,
-    redirect_uri: 'http://localhost:3000/api/zoom',
+    redirect_uri: `${publicRuntimeConfig.WEB_URL}/api/zoom`,
   })
   res.status(302)
   res.setHeader('Location', `${AUTHORIZE_URL}?${authorizeQuery}`)
