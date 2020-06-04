@@ -23,6 +23,9 @@ ENV API_HOST ${api_host}
 ARG web_url
 ENV WEB_URL ${web_url}
 
+ARG public_host
+ENV PUBLIC_HOST ${public_host}
+
 ARG google_client_id
 ENV GOOGLE_CLIENT_ID ${google_client_id}
 

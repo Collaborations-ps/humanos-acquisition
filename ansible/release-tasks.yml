@@ -28,6 +28,7 @@
       node_env: '{{ node_env }}'
       api_host: '{{ api_host }}'
       web_url: '{{ web_url }}'
+      public_host: '{{ public_host }}'
       google_client_id: '{{ google_client_id }}'
       sentry_dsn: '{{ sentry_dsn }}'
       microsoft_teams_client_id: '{{ microsoft_teams_client_id }}'

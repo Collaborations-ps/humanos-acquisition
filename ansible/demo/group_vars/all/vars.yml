@@ -3,6 +3,7 @@ node_env: production
 port: 80
 api_host: https://api.demo.humanos.c8.ai
 web_url: https://demo.humanos.c8.ai
+public_host: https://acquisition.demo.humanos.c8.ai
 google_client_id: 219313047580-d21scatk83efg15guk8qke0job6agvcb.apps.googleusercontent.com
 aws_region: us-west-2
 cluster: humanos-demo
