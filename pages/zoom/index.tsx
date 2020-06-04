@@ -11,7 +11,7 @@ import WrongEmail from '../../components/WrongEmail'
 
 import { publicRuntimeConfig } from '../../utils/config'
 import { Loading, Overlay } from '../../utils/styles'
-import { fetchMeetings } from '../../utils/zoom/actions'
+import { chooseAnotherAccount, fetchMeetings } from '../../utils/zoom/actions'
 import { reducer, initialState, FetchingStage } from '../../utils/zoom/reducer'
 
 interface Props {
@@ -41,8 +41,14 @@ export default function ZoomPage(props: Props) {
   }, [token])
 
   const onChooseAnother = useCallback(() => {
-    // chooseAnotherAccount({ dispatch, emails })
-  }, [emails])
+    if (token) {
+      const doChoose = async () => {
+        await chooseAnotherAccount({ token: token as string })
+        router.push('/api/zoom')
+      }
+      doChoose()
+    }
+  }, [token])
 
   if (state.error) {
     return <Error error={state.error.message} />

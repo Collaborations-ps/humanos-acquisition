@@ -1,7 +1,8 @@
 import qs from 'qs'
 
 interface FetchZoomAPIOptions {
-  token: string
+  token?: string
+  method?: string
 }
 
 export default async function fetchZoomAPI(
@@ -11,6 +12,7 @@ export default async function fetchZoomAPI(
   const query = qs.stringify({
     endpoint,
     token: options.token,
+    method: options.method,
   })
   const response = await fetch(`/api/zoom/call?${query}`)
   const data = await response.json()
