@@ -23,7 +23,7 @@ export default async function zoomHandler(
     const tokenQuery = qs.stringify({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: `${publicRuntimeConfig.WEB_URL}/api/zoom`,
+      redirect_uri: `${publicRuntimeConfig.PUBLIC_HOST}/api/zoom`,
     })
 
     try {
@@ -37,7 +37,7 @@ export default async function zoomHandler(
       res.status(302)
       res.setHeader(
         'Location',
-        `${publicRuntimeConfig.WEB_URL}/zoom?token=${tokenResponse.data.access_token}`,
+        `${publicRuntimeConfig.PUBLIC_HOST}/zoom?token=${tokenResponse.data.access_token}`,
       )
       res.end()
       return
@@ -51,7 +51,7 @@ export default async function zoomHandler(
   const authorizeQuery = qs.stringify({
     response_type: 'code',
     client_id: serverRuntimeConfig.ZOOM_CLIENT_ID,
-    redirect_uri: `${publicRuntimeConfig.WEB_URL}/api/zoom`,
+    redirect_uri: `${publicRuntimeConfig.PUBLIC_HOST}/api/zoom`,
   })
   res.status(302)
   res.setHeader('Location', `${AUTHORIZE_URL}?${authorizeQuery}`)

@@ -6,6 +6,7 @@ module.exports = withImages({
   publicRuntimeConfig: {
     API_HOST: process.env.API_HOST,
     WEB_URL: process.env.WEB_URL,
+    PUBLIC_HOST: process.env.PUBLIC_HOST,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     SENTRY_DSN: process.env.SENTRY_DSN,
     MICROSOFT_TEAMS_CLIENT_ID: process.env.MICROSOFT_TEAMS_CLIENT_ID,
