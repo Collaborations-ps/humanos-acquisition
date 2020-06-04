@@ -65,9 +65,29 @@ async function getMyEmails(): Promise<boolean | string[]> {
   }
 }
 
-async function sendNotification(id: string, email: string): Promise<boolean> {
+async function sendGmailNotification(
+  id: string,
+  email: string,
+): Promise<boolean> {
   const response = await axiosWithRefresh.get(
     `${publicRuntimeConfig.API_HOST}/private/gmailPackageUploaded`,
+    {
+      headers: getAuthHeaders(),
+      params: { id, email },
+    },
+  )
+
+  const data = get(response, 'data', { ok: false })
+
+  return data.ok
+}
+
+async function sendOutlookNotification(
+  id: string,
+  email: string,
+): Promise<boolean> {
+  const response = await axiosWithRefresh.get(
+    `${publicRuntimeConfig.API_HOST}/private/outlookPackageUploaded`,
     {
       headers: getAuthHeaders(),
       params: { id, email },
@@ -110,9 +130,42 @@ async function signGmailPackage({
   return false
 }
 
+async function signOutlookPackage({
+  name,
+  contentType,
+  size,
+  email,
+}: {
+  name: string
+  contentType: string
+  size: number
+  email: string
+}): Promise<{ id: string; s3Url: string } | boolean> {
+  const response = await axiosWithRefresh.get(
+    `${publicRuntimeConfig.API_HOST}/private/signOutlookPackage`,
+    {
+      headers: getAuthHeaders(),
+      params: { name, contentType, size, email },
+    },
+  )
+
+  const data = get(response, 'data', { ok: false })
+
+  if (data.ok) {
+    return {
+      id: data.id,
+      s3Url: data.s3Url,
+    }
+  }
+
+  return false
+}
+
 export default {
   checkAuthorized,
   signGmailPackage,
-  sendNotification,
+  signOutlookPackage,
+  sendGmailNotification,
+  sendOutlookNotification,
   getMyEmails,
 }
