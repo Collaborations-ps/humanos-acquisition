@@ -28,11 +28,14 @@
       node_env: '{{ node_env }}'
       api_host: '{{ api_host }}'
       web_url: '{{ web_url }}'
+      public_host: '{{ public_host }}'
       google_client_id: '{{ google_client_id }}'
       sentry_dsn: '{{ sentry_dsn }}'
       microsoft_teams_client_id: '{{ microsoft_teams_client_id }}'
       microsoft_teams_authority: '{{ microsoft_teams_authority }}'
       microsoft_teams_redirect_uri: '{{ microsoft_teams_redirect_uri }}'
+      zoom_client_id: '{{ zoom_client_id }}'
+      zoom_client_secret: '{{ zoom_client_secret }}'
 
 - name: Print tag
   debug:

@@ -3,11 +3,14 @@ node_env: production
 port: 80
 api_host: https://api.humanos.c8.ai
 web_url: https://humanos.c8.ai
+public_host: https://acquisition.humanos.c8.ai
 google_client_id: 841460680798-uountplflg21mvdcevumet2nqvg8r8o9.apps.googleusercontent.com
 sentry_dsn: https://d75883d456344b60845e311008d465aa@sentry.io/1731669
 microsoft_teams_client_id: a534fba4-fa50-48fc-91f9-104352b86625
 microsoft_teams_authority: https://login.microsoftonline.com/common
 microsoft_teams_redirect_uri: https://acquisition.humanos.c8.ai/microsoft-teams
+zoom_client_id: Wqdrz3NcTj6fFmDnPHpyYA
+zoom_client_secret: RDnkCZB4SkIjM8iqnuCYPDQffUJFWADo
 aws_region: us-west-2
 cluster: humanos-staging
 acquisition_image_name: humanos-acquisition

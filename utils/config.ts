@@ -1,5 +1,5 @@
 import getConfig from 'next/config'
 
-const { publicRuntimeConfig } = getConfig()
+const { publicRuntimeConfig, serverRuntimeConfig } = getConfig()
 
-export { publicRuntimeConfig }
+export { publicRuntimeConfig, serverRuntimeConfig }

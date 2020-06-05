@@ -23,6 +23,9 @@ ENV API_HOST ${api_host}
 ARG web_url
 ENV WEB_URL ${web_url}
 
+ARG public_host
+ENV PUBLIC_HOST ${public_host}
+
 ARG google_client_id
 ENV GOOGLE_CLIENT_ID ${google_client_id}
 
@@ -37,6 +40,12 @@ ENV MICROSOFT_TEAMS_AUTHORITY ${microsoft_teams_authority}
 
 ARG microsoft_teams_redirect_uri
 ENV MICROSOFT_TEAMS_REDIRECT_URI ${microsoft_teams_redirect_uri}
+
+ARG zoom_client_id
+ENV ZOOM_CLIENT_ID ${zoom_client_id}
+
+ARG zoom_client_secret
+ENV ZOOM_CLIENT_SECRET ${zoom_client_secret}
 
 COPY --from=node_cache /cache/ .
 
