@@ -10,6 +10,9 @@ export const actionTypes = {
   FETCH_SUCCESS: 'FETCH_SUCCESS',
   MESSAGES_FETCH_START: 'MESSAGES_FETCH_START',
   NEW_MESSAGES: 'NEW_MESSAGES',
+  NOTIFICATION_START: 'NOTIFICATION_START',
+  SIGN_FILE_START: 'SIGN_FILE_START',
+  UPLOAD_FILE_START: 'UPLOAD_FILE_START',
   WRONG_EMAIL: 'WRONG_EMAIL',
 }
 
@@ -17,6 +20,9 @@ export enum FetchingStage {
   notStarted = 'notStarted',
   authorizing = 'authorizing',
   fetchingMessages = 'fetchingMessages',
+  signingFile = 'signingFile',
+  uploadingFile = 'uploadingFile',
+  notifyApp = 'notifyApp',
   done = 'done',
   error = 'error',
 }
@@ -66,6 +72,24 @@ export function reducer(state: State, action: Action): State {
     return {
       ...state,
       messagesCount: state.messagesCount + action.payload,
+    }
+  }
+  if (action.type === actionTypes.NOTIFICATION_START) {
+    return {
+      ...state,
+      fetchingStage: FetchingStage.notifyApp,
+    }
+  }
+  if (action.type === actionTypes.SIGN_FILE_START) {
+    return {
+      ...state,
+      fetchingStage: FetchingStage.signingFile,
+    }
+  }
+  if (action.type === actionTypes.UPLOAD_FILE_START) {
+    return {
+      ...state,
+      fetchingStage: FetchingStage.uploadingFile,
     }
   }
   if (action.type === actionTypes.WRONG_EMAIL) {

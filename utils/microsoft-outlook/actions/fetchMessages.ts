@@ -1,4 +1,5 @@
 import { Dispatch } from 'react'
+import axios from 'axios'
 
 import get from 'lodash/get'
 import includes from 'lodash/includes'
@@ -10,16 +11,21 @@ import {
   authorize,
   ENDPOINTS,
   fetchMSGraph,
+  logout,
 } from '../../../services/microsoft'
+
+import api from '../../api'
+import objToFile from '../../objToFile'
 
 import { actionTypes, Action } from '../reducer'
 
 const mapMessage = (message: any) => ({
-  from: get(message, 'from.emailAddress'),
-  toRecipients: map(get(message, 'toRecipients'), 'emailAddress'),
-  ccRecipients: map(get(message, 'ccRecipients'), 'emailAddress'),
-  bccRecipients: map(get(message, 'bccRecipients'), 'emailAddress'),
-  createdDateTime: get(message, 'createdDateTime'),
+  id: get(message, 'id'),
+  threadId: get(message, 'conversationId'),
+  date: get(message, 'createdDateTime'),
+  from: [get(message, 'from.emailAddress')],
+  to: map(get(message, 'toRecipients'), 'emailAddress'),
+  cc: map(get(message, 'ccRecipients'), 'emailAddress'),
 })
 
 async function* messagesIterator(accessToken: string) {
@@ -33,8 +39,8 @@ async function* messagesIterator(accessToken: string) {
         'from',
         'toRecipients',
         'ccRecipients',
-        'bccRecipients',
         'createdDateTime',
+        'conversationId',
       ],
     })
     if (!messages || isEmpty(messages.value)) {
@@ -84,7 +90,33 @@ export default async function fetchMessages({
       dispatch({ type: actionTypes.NEW_MESSAGES, payload: newMessages.length })
     }
 
-    console.log('MESSAGES', messages)
+    dispatch({ type: actionTypes.SIGN_FILE_START })
+
+    const file = objToFile(messages)
+
+    const s3Data = await api.signOutlookPackage({
+      name: file.name,
+      contentType: 'application/json',
+      size: file.size,
+      email: me.userPrincipalName,
+    })
+
+    const s3Url = get(s3Data, 's3Url')
+    const s3Id = get(s3Data, 'id')
+
+    if (typeof s3Url === 'string') {
+      dispatch({ type: actionTypes.UPLOAD_FILE_START })
+      await axios.put(s3Url, file, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      dispatch({ type: actionTypes.NOTIFICATION_START })
+      await api.sendOutlookNotification(s3Id, me.userPrincipalName)
+    }
+
+    await logout(Application.outlook)
 
     dispatch({ type: actionTypes.FETCH_SUCCESS })
   } catch (error) {

@@ -22,6 +22,9 @@ function isFetchingStage(fetchingStage: FetchingStage) {
   return includes([
     FetchingStage.authorizing,
     FetchingStage.fetchingMessages,
+    FetchingStage.signingFile,
+    FetchingStage.uploadingFile,
+    FetchingStage.notifyApp,
   ], fetchingStage)
 }
 
@@ -48,7 +51,7 @@ export default function MicrosoftTeamsPage(props: Props) {
   const isDone = state.fetchingStage === FetchingStage.done
 
   if (isDone) {
-    return <Done infoText="From/To/Cc/Bcc" />
+    return <Done infoText="From/To/Cc" />
   }
 
   const isFetching = isFetchingStage(state.fetchingStage)
@@ -60,6 +63,9 @@ export default function MicrosoftTeamsPage(props: Props) {
           <Image alt="loader" mb={4} src="/static/loader.svg" />
           {state.fetchingStage === FetchingStage.authorizing ? 'Waiting for authorization...' : null}
           {state.fetchingStage === FetchingStage.fetchingMessages ? `Loading ${state.messagesCount} messages...` : null}
+          {state.fetchingStage === FetchingStage.signingFile ? `Signing metadata file to upload...` : null}
+          {state.fetchingStage === FetchingStage.uploadingFile ? `Uploading metadata file...` : null}
+          {state.fetchingStage === FetchingStage.notifyApp ? `Notify application about upload...` : null}
         </Loading>
       </Overlay>
     );
@@ -84,7 +90,7 @@ export default function MicrosoftTeamsPage(props: Props) {
               To
             </Text>
             <Text color="#364152" fontSize={['10px', '12px']}>
-              Cc/Bcc
+              Cc
             </Text>
           </Flex>
           <Box bg="#e3e3e6" height="1px" width="100%" />

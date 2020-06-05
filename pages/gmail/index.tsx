@@ -11,6 +11,7 @@ import noop from 'lodash/noop'
 
 import { handleGoToApp } from '../../utils'
 import { publicRuntimeConfig } from '../../utils/config'
+import objToFile from '../../utils/objToFile'
 import { GoogleLogin, Header, Loading, Overlay, Progress } from '../../utils/styles'
 import { formatTimeLeft } from '../../utils/time'
 import api from '../../utils/api'
@@ -217,9 +218,8 @@ class App extends PureComponent<Props, State> {
     const { googleAuth } = this.state
 
     this.setState({ step: STEPS.signingFile })
-    const blob = new Blob([JSON.stringify(this.messages)])
 
-    const file = new File([blob], 'data.json', { type: 'application/json' })
+    const file = objToFile(this.messages)
 
     const s3Data = await api.signGmailPackage({
       name: file.name,
@@ -240,7 +240,7 @@ class App extends PureComponent<Props, State> {
       })
 
       this.setState({ step: STEPS.notifyApp })
-      await api.sendNotification(s3Id, get(googleAuth, 'email') || '')
+      await api.sendGmailNotification(s3Id, get(googleAuth, 'email') || '')
     }
 
     this.handleLogout(true)()
