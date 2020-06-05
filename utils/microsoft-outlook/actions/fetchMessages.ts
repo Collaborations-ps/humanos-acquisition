@@ -21,6 +21,7 @@ import { actionTypes, Action } from '../reducer'
 
 const mapMessage = (message: any) => ({
   id: get(message, 'id'),
+  threadId: get(message, 'conversationId'),
   date: get(message, 'createdDateTime'),
   from: [get(message, 'from.emailAddress')],
   to: map(get(message, 'toRecipients'), 'emailAddress'),
@@ -34,7 +35,13 @@ async function* messagesIterator(accessToken: string) {
     // eslint-disable-next-line no-await-in-loop
     const messages = await fetchMSGraph(url, {
       accessToken,
-      select: ['from', 'toRecipients', 'ccRecipients', 'createdDateTime'],
+      select: [
+        'from',
+        'toRecipients',
+        'ccRecipients',
+        'createdDateTime',
+        'conversationId',
+      ],
     })
     if (!messages || isEmpty(messages.value)) {
       return
