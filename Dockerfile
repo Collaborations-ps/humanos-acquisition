@@ -41,6 +41,15 @@ ENV MICROSOFT_TEAMS_AUTHORITY ${microsoft_teams_authority}
 ARG microsoft_teams_redirect_uri
 ENV MICROSOFT_TEAMS_REDIRECT_URI ${microsoft_teams_redirect_uri}
 
+ARG microsoft_outlook_client_id
+ENV MICROSOFT_OUTLOOK_CLIENT_ID ${microsoft_outlook_client_id}
+
+ARG microsoft_outlook_authority
+ENV MICROSOFT_OUTLOOK_AUTHORITY ${microsoft_outlook_authority}
+
+ARG microsoft_outlook_redirect_uri
+ENV MICROSOFT_OUTLOOK_REDIRECT_URI ${microsoft_outlook_redirect_uri}
+
 ARG zoom_client_id
 ENV ZOOM_CLIENT_ID ${zoom_client_id}
 

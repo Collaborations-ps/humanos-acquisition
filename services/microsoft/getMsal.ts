@@ -15,12 +15,12 @@ const instanceAuth = {
     redirectUri: publicRuntimeConfig.MICROSOFT_TEAMS_REDIRECT_URI,
     postLogoutRedirectUri: publicRuntimeConfig.MICROSOFT_TEAMS_REDIRECT_URI,
   },
-  // TODO: Replace teams envs with outlook app envs
+
   outlook: {
-    clientId: publicRuntimeConfig.MICROSOFT_TEAMS_CLIENT_ID,
-    authority: publicRuntimeConfig.MICROSOFT_TEAMS_AUTHORITY,
-    redirectUri: publicRuntimeConfig.MICROSOFT_TEAMS_REDIRECT_URI,
-    postLogoutRedirectUri: publicRuntimeConfig.MICROSOFT_TEAMS_REDIRECT_URI,
+    clientId: publicRuntimeConfig.MICROSOFT_OUTLOOK_CLIENT_ID,
+    authority: publicRuntimeConfig.MICROSOFT_OUTLOOK_AUTHORITY,
+    redirectUri: publicRuntimeConfig.MICROSOFT_OUTLOOK_REDIRECT_URI,
+    postLogoutRedirectUri: publicRuntimeConfig.MICROSOFT_OUTLOOK_REDIRECT_URI,
   },
 }
 
