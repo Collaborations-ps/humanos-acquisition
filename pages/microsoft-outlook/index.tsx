@@ -3,9 +3,6 @@ import { Box, Button, Flex, Image, Text } from 'rebass'
 import { GetServerSideProps } from 'next'
 
 import { google } from "googleapis"
-import { GoogleToken } from "gtoken"
-import path from "path"
-// import { authenticate } from "@google-cloud/local-auth"
 
 import includes from 'lodash/includes'
 import map from 'lodash/map'
@@ -34,18 +31,14 @@ function isFetchingStage(fetchingStage: FetchingStage) {
   ], fetchingStage)
 }
 
-const gmail = google.gmail('v1')
-
 async function runSample() {
-
-
   var jwtClient = new google.auth.JWT(
     'networkosserviceaccount@gmail-service-account-283908.iam.gserviceaccount.com',
     'gmail-service-account-283908-b61725e309e5.json',
     null,
     'https://www.googleapis.com/auth/gmail.metadata',
     'info@startupcraft.io',
-  );
+  )
   
   // Use the JWT client to generate an access token.
   jwtClient.authorize(function(error, tokens) {
