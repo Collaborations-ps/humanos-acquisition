@@ -1,5 +1,11 @@
 import React, { Fragment, useReducer, useCallback } from 'react'
 import { Box, Button, Flex, Image, Text } from 'rebass'
+import { GetServerSideProps } from 'next'
+
+import { google } from "googleapis"
+import { GoogleToken } from "gtoken"
+import path from "path"
+// import { authenticate } from "@google-cloud/local-auth"
 
 import includes from 'lodash/includes'
 import map from 'lodash/map'
@@ -28,8 +34,65 @@ function isFetchingStage(fetchingStage: FetchingStage) {
   ], fetchingStage)
 }
 
-export default function MicrosoftTeamsPage(props: Props) {
-  const { emails } = props
+const gmail = google.gmail('v1')
+
+async function runSample() {
+
+
+  var jwtClient = new google.auth.JWT(
+    'networkosserviceaccount@gmail-service-account-283908.iam.gserviceaccount.com',
+    'gmail-service-account-283908-b61725e309e5.json',
+    null,
+    'https://www.googleapis.com/auth/gmail.metadata',
+    'info@startupcraft.io',
+  );
+  
+  // Use the JWT client to generate an access token.
+  jwtClient.authorize(function(error, tokens) {
+    if (error) {
+      console.log("Error making request to generate access token:", error);
+    } else if (tokens && (tokens.access_token === null)) {
+      console.log("Provided service account does not have permission to generate access tokens");
+    } else {
+      var accessToken = tokens && tokens.access_token;
+      console.log("accessToken", accessToken)
+
+      console.log("Google-API Authed!");
+      const gmail = google.gmail({
+        version: "v1",
+        auth: jwtClient
+      });
+      gmail.users.messages.list({
+        userId: 'info@startupcraft.io'
+      }, (err, messages) => {
+        //will print out an array of messages plus the next page token
+        console.log(err);
+        console.dir(JSON.stringify(messages));
+      });
+  
+      // See the "Using the access token" section below for information
+      // on how to use the access token to send authenticated requests to
+      // the Realtime Database REST API.
+    }
+  })
+}
+
+type Data = { emails?: string[] }
+
+export const getServerSideProps = async () => {
+  
+  console.log("RUUN FOR THE EYES BOOO!")
+  await runSample().catch(console.error);
+
+  return {
+    props: {
+      emails: [],
+    },
+  }
+}
+
+export default async function MicrosoftTeamsPage(props: GetServerSideProps<typeof getServerSideProps>) {  
+  const emails = ['']
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const connectData = useCallback(() => {
@@ -87,7 +150,7 @@ export default function MicrosoftTeamsPage(props: Props) {
         >
           <Flex justifyContent="space-between" mb={1}>
             <Text color="#364152" fontSize={['10px', '12px']}>
-              To
+              ToXYI2
             </Text>
             <Text color="#364152" fontSize={['10px', '12px']}>
               Cc
