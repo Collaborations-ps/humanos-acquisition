@@ -72,7 +72,7 @@ export default class AcquisitionApp extends App {
           {authorized ? (
             <Component {...pageProps} emails={emails} />
           ) : (
-            this.renderNotAuthorized()
+            <Component {...pageProps} emails={emails} />
           )}
         </Main>
       </>
