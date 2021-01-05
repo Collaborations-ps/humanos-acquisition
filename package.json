@@ -18,7 +18,7 @@
     "@sentry/node": "5.15.4",
     "@startupcraft/dotenv-config": "0.0.2",
     "addressparser": "1.0.1",
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "emailjs-imap-client": "3.1.0",
     "js-cookie": "2.2.1",
     "koa": "2.11.0",
