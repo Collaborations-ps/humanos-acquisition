@@ -9,6 +9,9 @@ sentry_dsn: https://ea19810535124b5784d374afbb9e7e90@sentry.io/1731689
 microsoft_teams_client_id: a534fba4-fa50-48fc-91f9-104352b86625
 microsoft_teams_authority: https://login.microsoftonline.com/common
 microsoft_teams_redirect_uri: https://acquisition.os.collaboration.ai/microsoft-teams
+microsoft_outlook_client_id: a534fba4-fa50-48fc-91f9-104352b86625
+microsoft_outlook_authority: https://login.microsoftonline.com/common
+microsoft_outlook_redirect_uri: https://acquisition.os.collaboration.ai/microsoft-outlook
 zoom_client_id: hT_AazuCSyC2wylPFSyddw
 zoom_client_secret: NhtKQQCvuh6w4C3qshOt47oz3axyMF5O
 aws_region: us-west-2

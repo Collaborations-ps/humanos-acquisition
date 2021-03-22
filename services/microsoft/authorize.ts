@@ -13,7 +13,7 @@ type Scopes = { [key in Application]: string[] }
 
 const scopes: Scopes = {
   [Application.teams]: ['User.Read', 'Group.Read.All'],
-  [Application.outlook]: ['User.Read', 'Mail.ReadBasic'],
+  [Application.outlook]: ['User.Read', 'Mail.Read'],
 }
 
 export default async function authorize(params: AuthorizationParams) {
@@ -24,11 +24,14 @@ export default async function authorize(params: AuthorizationParams) {
     scopes: scopes[params.application],
     prompt: 'consent',
   }
-
+  console.dir(request)
+  console.dir(msal)
   let tokenResponse: any
   try {
     tokenResponse = await msal.acquireTokenSilent(request)
+    console.dir(tokenResponse)
   } catch (error) {
+    console.dir(error)
     if (error instanceof InteractionRequiredAuthError) {
       tokenResponse = await msal.acquireTokenPopup(request)
     } else {
