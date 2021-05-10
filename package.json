@@ -24,7 +24,7 @@
     "koa": "2.11.0",
     "koa-compress": "3.0.0",
     "koa-router": "8.0.8",
-    "lodash": "4.17.19",
+    "lodash": "4.17.21",
     "luxon": "1.22.2",
     "msal": "1.3.1",
     "nanoid": "3.0.2",
